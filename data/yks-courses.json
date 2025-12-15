@@ -1,0 +1,141 @@
+{
+  "courses": [
+    {
+      "id": "turkce",
+      "name": "Türkçe",
+      "completion": 42,
+      "topics": [
+        { "name": "Yazım Kuralları", "completion": 80 },
+        { "name": "Paragraf Analizi", "completion": 60 },
+        { "name": "Cümle Bilgisi", "completion": 45 },
+        { "name": "Anlatım Bozuklukları", "completion": 30 },
+        { "name": "Edebiyat - Şiir", "completion": 20 },
+        { "name": "Edebiyat - Roman", "completion": 10 },
+        { "name": "Sözcükte Anlam", "completion": 50 },
+        { "name": "İmlâ Kuralları", "completion": 40 },
+        { "name": "Paragraf Çözümü - İleri", "completion": 15 },
+        { "name": "Metin İncelemesi", "completion": 5 }
+      ]
+    },
+    {
+      "id": "matematik",
+      "name": "Matematik",
+      "completion": 28,
+      "topics": [
+        { "name": "Fonksiyonlar", "completion": 50 },
+        { "name": "Polinomlar", "completion": 20 },
+        { "name": "Türev", "completion": 30 },
+        { "name": "İntegral", "completion": 10 },
+        { "name": "Limit", "completion": 25 },
+        { "name": "Permutasyon", "completion": 15 },
+        { "name": "Kümeler", "completion": 35 },
+        { "name": "Trigonometri", "completion": 12 },
+        { "name": "Olasılık", "completion": 8 },
+        { "name": "Geometri - Çember", "completion": 5 }
+      ]
+    },
+    {
+      "id": "fen",
+      "name": "Fen Bilimleri",
+      "completion": 53,
+      "topics": [
+        { "name": "Kimya - Reaksiyonlar", "completion": 70 },
+        { "name": "Kimya - Asit-Baz", "completion": 55 },
+        { "name": "Fizik - Optik", "completion": 40 },
+        { "name": "Fizik - Dinamik", "completion": 20 },
+        { "name": "Biyoloji - DNA", "completion": 60 },
+        { "name": "Biyoloji - Hücre", "completion": 45 },
+        { "name": "Enerji Dönüşümleri", "completion": 30 },
+        { "name": "Modern Fizik", "completion": 10 },
+        { "name": "Elektrik Devreleri", "completion": 25 },
+        { "name": "Deney Analizi", "completion": 15 }
+      ]
+    },
+    {
+      "id": "sosyal",
+      "name": "Sosyal Bilimler",
+      "completion": 60,
+      "topics": [
+        { "name": "Tarih - Osmanlı", "completion": 75 },
+        { "name": "Tarih - Cumhuriyet", "completion": 65 },
+        { "name": "Coğrafya - Fiziki", "completion": 60 },
+        { "name": "Coğrafya - Beşeri", "completion": 50 },
+        { "name": "Felsefe - Etik", "completion": 65 },
+        { "name": "Sosyoloji - Temel", "completion": 40 },
+        { "name": "Din Kültürü", "completion": 60 },
+        { "name": "İktisat - Temel", "completion": 30 },
+        { "name": "Medya Okuryazarlığı", "completion": 20 },
+        { "name": "Coğrafya - Harita Okuma", "completion": 35 }
+      ]
+    },
+    {
+      "id": "ingilizce",
+      "name": "İngilizce",
+      "completion": 37,
+      "topics": [
+        { "name": "Kelime Hazinesi", "completion": 50 },
+        { "name": "Grammar - Tense", "completion": 30 },
+        { "name": "Reading Comprehension", "completion": 25 },
+        { "name": "Listening", "completion": 35 },
+        { "name": "Writing", "completion": 20 },
+        { "name": "Speaking - Pronunciation", "completion": 15 },
+        { "name": "Phrasal Verbs", "completion": 10 },
+        { "name": "Idioms", "completion": 5 },
+        { "name": "Exam Strategies", "completion": 12 },
+        { "name": "Vocabulary - Academic", "completion": 8 }
+      ]
+    },
+    {
+      "id": "mantik",
+      "name": "Mantık & Problem Çözme",
+      "completion": 22,
+      "topics": [
+        { "name": "Mantık - Önermeler", "completion": 10 },
+        { "name": "Karmaşık Problemler", "completion": 5 },
+        { "name": "Hızlı Okuma Teknikleri", "completion": 30 },
+        { "name": "Analitik Düşünme", "completion": 25 },
+        { "name": "Zaman Yönetimi", "completion": 40 }
+      ]
+    },
+    {
+      "id": "kodlama",
+      "name": "Temel Kodlama",
+      "completion": 15,
+      "topics": [
+        { "name": "Algoritma Temelleri", "completion": 10 },
+        { "name": "Veri Yapıları", "completion": 5 },
+        { "name": "Python - Temel", "completion": 20 },
+        { "name": "Problem Çözme", "completion": 15 }
+      ]
+    },
+    {
+      "id": "psikoloji",
+      "name": "Sınav Psikolojisi",
+      "completion": 48,
+      "topics": [
+        { "name": "Motivasyon", "completion": 60 },
+        { "name": "Kaygı Yönetimi", "completion": 50 },
+        { "name": "Dikkat Teknikleri", "completion": 40 },
+        { "name": "Uyku ve Beslenme", "completion": 40 }
+      ]
+    },
+    {
+      "id": "deneme",
+      "name": "Deneme Çözümü",
+      "completion": 33,
+      "topics": [
+        { "name": "Tam Deneme Analizi", "completion": 30 },
+        { "name": "Hızlı Çözüm Teknikleri", "completion": 20 },
+        { "name": "Yanlış Analizi", "completion": 40 },
+        { "name": "Zaman Planlama", "completion": 35 }
+      ]
+    }
+  ],
+  "studentInfo": {
+    "name": "Öğrenci",
+    "targetScore": 500,
+    "examDate": "2025-06-15",
+    "studyHoursPerWeek": 30,
+    "notes": "Bu veri dosyası genişletilmiş örnek veri içerir. Daha fazla konu ekleyip algoritmayı test edebilirsiniz."
+  }
+}
