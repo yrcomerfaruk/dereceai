@@ -121,13 +121,6 @@ export default function ClientLayout() {
       </nav>
 
       <div className="flex flex-col flex-1 md:ml-44">
-        {/* Header */}
-        <header className="flex items-center justify-center h-16 bg-white border-b">
-          <h1 className="text-xl font-semibold text-gray-800">
-            {currentPageLabel}
-          </h1>
-        </header>
-
         {/* Main Content */}
         <main className="flex-1 p-3 sm:p-4 md:p-6">
           {renderPage()}
