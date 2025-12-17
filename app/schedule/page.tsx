@@ -182,7 +182,11 @@ export default function SchedulePage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-6 flex justify-end">
+      <div className="mb-6 flex justify-between items-center gap-4">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Program
+        </h1>
+
         <div className="bg-gray-100 rounded-full p-1 flex items-center space-x-1">
           <button
             onClick={() => setView('takvim')}
