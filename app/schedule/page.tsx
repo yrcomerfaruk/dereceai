@@ -187,20 +187,23 @@ export default function SchedulePage() {
           Haftalık Ders Programı
         </h1>
 
-        <div className="flex items-center gap-2">
-          <div className="text-xs text-gray-900">Görünüm:</div>
+        <div className="bg-gray-100 rounded-full p-1 flex items-center space-x-1">
           <button
             onClick={() => setView('takvim')}
-            className={`px-2 py-1 rounded text-xs border ${
-              view === 'takvim' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-300'
+            className={`whitespace-nowrap px-3 py-1 rounded-full font-medium text-sm transition-all ${
+              view === 'takvim'
+                ? 'bg-white text-gray-800 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             Takvim
           </button>
           <button
             onClick={() => setView('liste')}
-            className={`px-2 py-1 rounded text-xs border ${
-              view === 'liste' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-300'
+            className={`whitespace-nowrap px-3 py-1 rounded-full font-medium text-sm transition-all ${
+              view === 'liste'
+                ? 'bg-white text-gray-800 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             Liste
