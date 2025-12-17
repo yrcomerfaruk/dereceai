@@ -81,13 +81,19 @@ export default function ClientLayout() {
     }
   };
 
-  const currentPageLabel = navItems.find((item) => item.id === currentPage)?.label;
-
   return (
     <div className="flex min-h-screen bg-white">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-20 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <nav
-        className={`w-44 bg-white text-gray-900 p-3 flex flex-col fixed inset-y-0 left-0 z-50 shadow-sm border-r transition-transform duration-300 transform ${
+        className={`w-44 bg-white text-gray-900 p-3 flex flex-col fixed left-0 top-0 h-screen z-40 shadow-sm border-r transition-transform duration-300 transform md:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -95,6 +101,7 @@ export default function ClientLayout() {
           <Image src="/logo.png" alt="Company Logo" width={35} height={35} />
           <span className="text-lg font-semibold text-gray-900 ml-2">| Koç</span>
         </h1>
+
         <ul className="space-y-2 flex-1">
           {navItems.map((item) => (
             <li key={item.id}>
@@ -115,51 +122,35 @@ export default function ClientLayout() {
             </li>
           ))}
         </ul>
+
         <div className="border-t border-gray-700 pt-4 text-xs text-gray-900">
           <p>Version 1.0</p>
         </div>
       </nav>
 
-      {/* Overlay for mobile when sidebar is open */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-20 z-40 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      {/* Main Content */}
+      <main className="flex-1 md:ml-44 p-3 sm:p-4 md:p-6 mt-3 md:mt-0 relative">
+        {/* Mobile Menu Button (moved into header area to avoid overlap) */}
+        <div className="md:hidden absolute top-4 right-4 z-50">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="bg-gray-800 text-white p-2 rounded"
+            aria-label={sidebarOpen ? 'Kapat' : 'Menü'}
+          >
+            {sidebarOpen ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </button>
+        </div>
 
-      <div className={`flex flex-col flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-44' : 'md:ml-0'}`}>
-        {/* Header */}
-        <header className="flex items-center justify-center h-14 border-b">
-          <h1 className="text-lg font-semibold text-gray-800">
-            {currentPageLabel}
-          </h1>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-1 p-3 sm:p-4 md:p-6">
-          {renderPage()}
-        </main>
-      </div>
-
-      {/* Mobile Menu FAB */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="bg-gray-800 text-white p-3 rounded-full shadow-lg flex items-center justify-center"
-          aria-label="Toggle menu"
-        >
-          {sidebarOpen ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
-        </button>
-      </div>
+        {renderPage()}
+      </main>
     </div>
   );
 }
