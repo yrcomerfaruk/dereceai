@@ -62,7 +62,7 @@ export default function HomePage() {
   return (
     <div className="max-w-5xl mx-auto">
       {/* Tab Navigation */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+      <div className="mb-6 flex justify-between items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900">
           Ana Sayfa
         </h1>
