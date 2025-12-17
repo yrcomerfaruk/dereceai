@@ -182,11 +182,11 @@ export default function SchedulePage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Haftalık Ders Programı
-        </h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        Haftalık Ders Programı
+      </h1>
 
+      <div className="mb-6 flex justify-end">
         <div className="bg-gray-100 rounded-full p-1 flex items-center space-x-1">
           <button
             onClick={() => setView('takvim')}
