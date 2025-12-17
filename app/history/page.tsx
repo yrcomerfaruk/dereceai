@@ -57,12 +57,9 @@ export default function HistoryPage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-          Geçmiş Programlar
-        </h2>
-        <p className="text-gray-900">Önceki haftalarda oluşturulan ders programlarını gör</p>
-      </div>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        Geçmiş Programlar
+      </h1>
 
       <div className="space-y-4">
         {history.map((item) => (

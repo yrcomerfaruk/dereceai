@@ -61,13 +61,10 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-            Profilim
-          </h2>
-          <p className="text-gray-900">Öğrenci bilgileri ve kaynaklar</p>
-        </div>
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Profilim
+        </h1>
         <button
           onClick={() => (editMode ? handleSave() : setEditMode(true))}
           className="bg-gray-900 text-white px-4 py-2 rounded font-semibold hover:bg-gray-800 transition text-sm"

@@ -20,7 +20,7 @@ const paymentInfo = {
 export default function PaymentsPage() {
   return (
     <div className="p-4 md:p-6">
-      <h1 className="text-2xl font-semibold text-gray-800 mb-6">Ödemeler</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Ödemeler</h1>
 
       {/* Ödeme Bilgileri Kartı */}
       <div className="bg-white shadow-md rounded-lg p-6 mb-8">

@@ -14,7 +14,7 @@ export default function SchedulePage() {
   const [schedule, setSchedule] = useState<DaySchedule[]>([]);
   const [editingDay, setEditingDay] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
-  const [view, setView] = useState<'liste' | 'takvim'>('liste');
+  const [view, setView] = useState<'liste' | 'takvim'>('takvim');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -182,13 +182,10 @@ export default function SchedulePage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-0">
-            Haftalık Ders Programı
-          </h2>
-          <p className="text-gray-900 text-xs">Düzeltmeler için edit ikonuna tıkla</p>
-        </div>
+      <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Haftalık Ders Programı
+        </h1>
 
         <div className="flex items-center gap-2">
           <div className="text-xs text-gray-900">Görünüm:</div>
