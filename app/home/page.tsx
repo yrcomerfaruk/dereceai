@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import StatisticsView from './statistics-view';
-import CoachView from './coach-view';
+import AIChatView from './ai-chat-view';
 
 interface Topic {
   name: string;
@@ -61,29 +61,23 @@ export default function HomePage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Tab Navigation */}
-      <div className="mb-6 flex justify-between items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Ana Sayfa
-        </h1>
-        <div className="bg-gray-100 rounded-full p-1 flex items-center space-x-1">
+      <div className="mb-3 flex justify-center items-center">
+        <div className="bg-gray-100 rounded-full p-0.5 flex items-center space-x-0.5">
           <button
             onClick={() => setActiveTab('coach')}
-            className={`whitespace-nowrap px-3 py-1 rounded-full font-medium text-sm transition-all ${
-              activeTab === 'coach'
-                ? 'bg-white text-gray-800 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className={`whitespace-nowrap px-3 py-0.5 rounded-full font-medium text-sm transition-all min-w-[30px] ${activeTab === 'coach'
+              ? 'bg-white text-gray-800 shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+              }`}
           >
             Koç
           </button>
           <button
             onClick={() => setActiveTab('statistics')}
-            className={`whitespace-nowrap px-3 py-1 rounded-full font-medium text-sm transition-all ${
-              activeTab === 'statistics'
-                ? 'bg-white text-gray-800 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className={`whitespace-nowrap px-3 py-0.5 rounded-full font-medium text-sm transition-all min-w-[30px] ${activeTab === 'statistics'
+              ? 'bg-white text-gray-800 shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+              }`}
           >
             İstatistik
           </button>
@@ -93,7 +87,7 @@ export default function HomePage() {
       {/* Tab Content */}
       <div>
         {activeTab === 'statistics' && <StatisticsView courses={courses} stats={stats} />}
-        {activeTab === 'coach' && <CoachView />}
+        {activeTab === 'coach' && <AIChatView />}
       </div>
     </div>
   );

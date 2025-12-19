@@ -1,0 +1,168 @@
+/* Scoped styles for coach view (mobile + desktop) */
+
+/* Utility: hide scrollbar */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* -----------------------------------
+   MOBILE STYLES
+   - .coach-mobile is applied to the mobile wrapper
+   - messages live in .coach-messages
+   - input lives in .coach-input
+   ----------------------------------- */
+.coach-mobile {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  z-index: 60;
+  pointer-events: auto;
+}
+
+.coach-mobile .coach-messages {
+  box-sizing: border-box;
+  padding: 12px 16px 8px 16px;
+  /* reserve space for the input (approx 72px) + safe-area */
+  max-height: calc(100vh - 96px - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.coach-mobile .coach-messages .message-bubble,
+.coach-mobile .coach-messages .break-words {
+  /* ensure bubbles wrap correctly */
+  display: inline-block;
+  word-break: break-word;
+}
+
+.coach-mobile .coach-input {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: calc(env(safe-area-inset-bottom) + 8px) 12px 12px 12px;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  z-index: 80; /* should be above mobile nav */
+  box-sizing: border-box;
+}
+.coach-mobile .coach-input .inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.coach-mobile textarea,
+.coach-mobile input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  background: #f5f7fb;
+  resize: none;
+  font-size: 14px;
+}
+
+.coach-mobile button {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* -----------------------------------
+   DESKTOP STYLES
+   - .coach-desktop is applied to the desktop wrapper
+   - messages live in .coach-messages-desktop
+   - input lives in .coach-input-desktop
+   ----------------------------------- */
+.coach-desktop .coach-messages-desktop {
+  box-sizing: border-box;
+  padding: 24px;
+  max-height: calc(100vh - 240px);
+  overflow-y: auto;
+}
+
+.coach-desktop .coach-messages-desktop .message-bubble,
+.coach-desktop .coach-messages-desktop .break-words {
+  display: inline-block;
+  word-break: break-word;
+}
+
+.coach-desktop .coach-input-desktop {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  max-width: 1100px;
+  z-index: 90;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+  box-sizing: border-box;
+}
+
+.coach-desktop textarea,
+.coach-desktop input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  resize: none;
+  font-size: 15px;
+}
+
+.coach-desktop button {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* -----------------------------------
+   Bubble styles (shared)
+   ----------------------------------- */
+.message-bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: 0 1px 0 rgba(15,23,42,0.02);
+}
+.message-bubble.user {
+  background: #0f172a; /* dark */
+  color: #ffffff;
+  border-radius: 12px 12px 6px 12px;
+}
+.message-bubble.bot {
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 12px 12px 12px 6px;
+}
+
+/* small helper to visually tighten spacing when messages are short */
+.coach-mobile .coach-messages .message-bubble + .message-bubble,
+.coach-desktop .coach-messages-desktop .message-bubble + .message-bubble {
+  margin-top: 6px;
+}
+
+/* Responsive guard: ensure desktop rules don't apply on mobile */
+@media (max-width: 767px) {
+  .coach-desktop { display: none !important; }
+}
+@media (min-width: 768px) {
+  .coach-mobile { display: none !important; }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface StudentProfile {
   name: string;
@@ -14,7 +14,7 @@ interface StudentProfile {
 }
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<StudentProfile>({
+  const [profile] = useState<StudentProfile>({
     name: 'Öğrenci',
     targetScore: 500,
     examDate: '2025-06-15',
@@ -33,135 +33,55 @@ export default function ProfilePage() {
     totalTopics: 25,
   });
 
-  const [editMode, setEditMode] = useState(false);
-  const [tempProfile, setTempProfile] = useState(profile);
-
-  const handleSave = () => {
-    setProfile(tempProfile);
-    setEditMode(false);
-  };
-
-  const handleInputChange = (field: string, value: any) => {
-    setTempProfile({ ...tempProfile, [field]: value });
-  };
-
-  const handleAddTeacher = () => {
-    setTempProfile({
-      ...tempProfile,
-      teachers: [...tempProfile.teachers, { subject: '', name: '' }],
-    });
-  };
-
-  const handleAddBook = () => {
-    setTempProfile({
-      ...tempProfile,
-      books: [...tempProfile.books, { name: '', subject: '' }],
-    });
-  };
-
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Profilim
-        </h1>
-        <button
-          onClick={() => (editMode ? handleSave() : setEditMode(true))}
-          className="bg-gray-900 text-white px-4 py-2 rounded font-semibold hover:bg-gray-800 transition text-sm"
-        >
-          {editMode ? '✓ Kaydet' : '✏ Düzenle'}
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Temel Bilgiler */}
-        <div className="border border-gray-300 rounded-lg p-6 bg-white">
-          <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b border-gray-300">
-            Temel Bilgiler
-          </h3>
-          <div className="space-y-4">
+        <div className="border border-gray-300 rounded-lg p-3 bg-white">
+          <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
+            <h3 className="text-sm font-bold text-gray-900">Temel Bilgiler</h3>
+            <button className="text-gray-400 hover:text-gray-700 text-xs transition-colors">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 21v-3.75L14.06 6.19a2 2 0 0 1 2.83 0l1.92 1.92a2 2 0 0 1 0 2.83L7.75 22H4a1 1 0 0 1-1-1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+          <div className="space-y-2">
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Adı
-              </label>
-              {editMode ? (
-                <input
-                  type="text"
-                  value={tempProfile.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-              ) : (
-                <p className="text-gray-900">{profile.name}</p>
-              )}
+              <p className="text-xs text-gray-500 mb-0.5">Adı</p>
+              <p className="text-gray-900 text-sm">{profile.name}</p>
             </div>
-
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Hedef Puan
-              </label>
-              {editMode ? (
-                <input
-                  type="number"
-                  value={tempProfile.targetScore}
-                  onChange={(e) => handleInputChange('targetScore', parseInt(e.target.value))}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-              ) : (
-                <p className="text-gray-900">{profile.targetScore}</p>
-              )}
+              <p className="text-xs text-gray-500 mb-0.5">Hedef Puan</p>
+              <p className="text-gray-900 text-sm">{profile.targetScore}</p>
             </div>
-
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Sınav Tarihi
-              </label>
-              {editMode ? (
-                <input
-                  type="date"
-                  value={tempProfile.examDate}
-                  onChange={(e) => handleInputChange('examDate', e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-              ) : (
-                <p className="text-gray-900">{profile.examDate}</p>
-              )}
+              <p className="text-xs text-gray-500 mb-0.5">Sınav Tarihi</p>
+              <p className="text-gray-900 text-sm">{profile.examDate}</p>
             </div>
-
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Haftalık Çalışma Saati
-              </label>
-              {editMode ? (
-                <input
-                  type="number"
-                  value={tempProfile.weeklyHours}
-                  onChange={(e) => handleInputChange('weeklyHours', parseInt(e.target.value))}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-              ) : (
-                <p className="text-gray-900">{profile.weeklyHours} saat</p>
-              )}
+              <p className="text-xs text-gray-500 mb-0.5">Haftalık Çalışma Saati</p>
+              <p className="text-gray-900 text-sm">{profile.weeklyHours} saat</p>
             </div>
           </div>
         </div>
 
         {/* İstatistikler */}
-        <div className="border border-gray-300 rounded-lg p-6 bg-white">
-          <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b border-gray-300">
+        <div className="border border-gray-300 rounded-lg p-3 bg-white">
+          <h3 className="text-sm font-bold text-gray-900 mb-2 pb-2 border-b border-gray-200">
             İlerleme
           </h3>
-          <div className="space-y-6">
+          <div className="space-y-3">
             <div>
-              <div className="flex justify-between mb-2">
-                <p className="text-sm font-semibold text-gray-900">Tamamlanan Konular</p>
-                <p className="text-sm font-bold text-gray-900">
+              <div className="flex justify-between mb-1">
+                <p className="text-xs text-gray-500">Tamamlanan Konular</p>
+                <p className="text-xs font-semibold text-gray-900">
                   {profile.completedTopics}/{profile.totalTopics}
                 </p>
               </div>
-              <div className="w-full bg-gray-300 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
-                  className="h-3 bg-gray-700 rounded-full"
+                  className="h-2 bg-gray-700 rounded-full"
                   style={{
                     width: `${(profile.completedTopics / profile.totalTopics) * 100}%`,
                   }}
@@ -170,11 +90,11 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <p className="text-sm font-semibold text-gray-900 mb-2">Sınavaya Kalan Gün</p>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-xs text-gray-500 mb-1">Sınavaya Kalan Gün</p>
+              <p className="text-2xl font-bold text-gray-900">
                 {Math.ceil(
                   (new Date(profile.examDate).getTime() - new Date().getTime()) /
-                    (1000 * 60 * 60 * 24)
+                  (1000 * 60 * 60 * 24)
                 )}
               </p>
             </div>
@@ -182,106 +102,64 @@ export default function ProfilePage() {
         </div>
 
         {/* Öğretmenler */}
-        <div className="border border-gray-300 rounded-lg p-6 bg-white">
-          <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-300">
-            <h3 className="text-lg font-bold text-gray-900">Öğretmenler</h3>
-            {editMode && (
-              <button
-                onClick={handleAddTeacher}
-                className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-900 px-2 py-1 rounded transition"
-              >
-                + Ekle
-              </button>
-            )}
+        <div className="border border-gray-300 rounded-lg p-3 bg-white">
+          <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
+            <h3 className="text-sm font-bold text-gray-900">Öğretmenler</h3>
+            <button className="text-gray-400 hover:text-gray-700 text-xs transition-colors">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 21v-3.75L14.06 6.19a2 2 0 0 1 2.83 0l1.92 1.92a2 2 0 0 1 0 2.83L7.75 22H4a1 1 0 0 1-1-1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
-          <div className="space-y-3">
-            {(editMode ? tempProfile : profile).teachers.map((teacher, idx) => (
-              <div key={idx} className="bg-gray-50 p-3 rounded">
-                {editMode ? (
-                  <>
-                    <input
-                      type="text"
-                      value={teacher.subject}
-                      placeholder="Ders"
-                      className="w-full border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mb-2"
-                    />
-                    <input
-                      type="text"
-                      value={teacher.name}
-                      placeholder="Hoca Adı"
-                      className="w-full border border-gray-300 rounded px-2 py-1 text-sm text-gray-900"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <p className="font-semibold text-gray-900 text-sm">{teacher.subject}</p>
-                    <p className="text-gray-900 text-sm">{teacher.name}</p>
-                  </>
-                )}
+          <div className="space-y-2">
+            {profile.teachers.map((teacher, idx) => (
+              <div key={idx} className="bg-gray-50 p-2 rounded">
+                <p className="font-semibold text-gray-900 text-xs">{teacher.subject}</p>
+                <p className="text-gray-600 text-xs">{teacher.name}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Kitaplar */}
-        <div className="border border-gray-300 rounded-lg p-6 bg-white">
-          <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-300">
-            <h3 className="text-lg font-bold text-gray-900">Kitaplar</h3>
-            {editMode && (
-              <button
-                onClick={handleAddBook}
-                className="text-sm bg-gray-200 hover:bg-gray-300 text-gray-900 px-2 py-1 rounded transition"
-              >
-                + Ekle
-              </button>
-            )}
+        <div className="border border-gray-300 rounded-lg p-3 bg-white">
+          <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
+            <h3 className="text-sm font-bold text-gray-900">Kitaplar</h3>
+            <button className="text-gray-400 hover:text-gray-700 text-xs transition-colors">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 21v-3.75L14.06 6.19a2 2 0 0 1 2.83 0l1.92 1.92a2 2 0 0 1 0 2.83L7.75 22H4a1 1 0 0 1-1-1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
-          <div className="space-y-3">
-            {(editMode ? tempProfile : profile).books.map((book, idx) => (
-              <div key={idx} className="bg-gray-50 p-3 rounded">
-                {editMode ? (
-                  <>
-                    <input
-                      type="text"
-                      value={book.name}
-                      placeholder="Kitap Adı"
-                      className="w-full border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 mb-2"
-                    />
-                    <input
-                      type="text"
-                      value={book.subject}
-                      placeholder="Ders"
-                      className="w-full border border-gray-300 rounded px-2 py-1 text-sm text-gray-900"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <p className="font-semibold text-gray-900 text-sm">{book.name}</p>
-                    <p className="text-gray-900 text-sm">{book.subject}</p>
-                  </>
-                )}
+          <div className="space-y-2">
+            {profile.books.map((book, idx) => (
+              <div key={idx} className="bg-gray-50 p-2 rounded">
+                <p className="font-semibold text-gray-900 text-xs">{book.name}</p>
+                <p className="text-gray-600 text-xs">{book.subject}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {editMode && (
-        <div className="flex gap-3 mt-8">
-          <button
-            onClick={() => setEditMode(false)}
-            className="flex-1 border border-gray-300 text-gray-900 py-2 rounded font-semibold hover:bg-gray-50 transition"
-          >
-            İptal
-          </button>
-          <button
-            onClick={handleSave}
-            className="flex-1 bg-gray-900 text-white py-2 rounded font-semibold hover:bg-gray-800 transition"
-          >
-            Kaydet
-          </button>
-        </div>
-      )}
+      {/* Reset Button for Testing/Re-onboarding */}
+      <div className="mt-8 flex justify-center">
+        <button
+          onClick={() => {
+            if (confirm('Tüm verileriniz sıfırlanacak ve onboarding tekrar başlayacak. Emin misiniz?')) {
+              localStorage.removeItem('onboardingData');
+              window.location.reload();
+            }
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg text-xs font-medium transition-all border border-gray-200"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12a9 9 0 1 1-3.5-7l-1 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M12 7v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Onboarding'i Sıfırla ve Yeniden Başlat
+        </button>
+      </div>
     </div>
   );
 }
