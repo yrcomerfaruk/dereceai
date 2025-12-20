@@ -12,7 +12,15 @@ const SUGGESTED_QUESTIONS = [
   "Bugünkü ders programım nedir?",
   "Matematik netlerimi nasıl artırabilirim?",
   "Haftalık ilerlememi özetle",
-  "Sınav takvimi ne zaman?"
+  "Sınav takvimi ne zaman?",
+  "TYT Türkçe için kaynak önerisi",
+  "Günde kaç saat çalışmalıyım?",
+  "Odaklanma sorunumu nasıl çözerim?",
+  "AYT Matematik konuları neler?",
+  "Deneme analizini nasıl yaparım?",
+  "Biyoloji ezberleri için taktik ver",
+  "Geometriye nasıl çalışılır?",
+  "Motivasyonum düştü, ne yapmalıyım?"
 ];
 
 export default function AIChatView() {
@@ -70,8 +78,14 @@ export default function AIChatView() {
     }
   }, [input]);
 
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (e.deltaY !== 0) {
+      e.currentTarget.scrollLeft += e.deltaY;
+    }
+  };
+
   return (
-    <div className="flex flex-col h-[calc(100dvh-100px)] md:h-[calc(100vh-100px)] relative md:-mx-3 md:-mb-6 sm:mx-0 sm:mb-0">
+    <div className="flex flex-col h-full relative">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-4 pb-8">
         {messages.length === 0 ? (
@@ -80,19 +94,40 @@ export default function AIChatView() {
               <h2 className="text-2xl font-bold text-black">
                 Merhaba, Koçun Burada!
               </h2>
-              <p className="text-gray-500 text-lg font-medium">Sana nasıl yardımcı olabilirim?</p>
+              <p className="text-gray-500 text-sm font-medium">Sana nasıl yardımcı olabilirim?</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl px-4">
-              {SUGGESTED_QUESTIONS.map((q, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSend(q)}
-                  className="p-2.5 text-left bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors border border-gray-100 text-gray-700 text-xs"
-                >
-                  {q}
-                </button>
-              ))}
+            <div className="w-full max-w-4xl space-y-3 overflow-hidden">
+              {/* İlk Sıra */}
+              <div
+                className="flex overflow-x-auto no-scrollbar gap-2 px-4 pb-1"
+                onWheel={handleWheel}
+              >
+                {SUGGESTED_QUESTIONS.slice(0, Math.ceil(SUGGESTED_QUESTIONS.length / 2)).map((q, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleSend(q)}
+                    className="whitespace-nowrap px-4 py-2.5 bg-white rounded-2xl transition-all border border-gray-200 text-gray-700 text-xs font-semibold shrink-0"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+              {/* İkinci Sıra */}
+              <div
+                className="flex overflow-x-auto no-scrollbar gap-2 px-4"
+                onWheel={handleWheel}
+              >
+                {SUGGESTED_QUESTIONS.slice(Math.ceil(SUGGESTED_QUESTIONS.length / 2)).map((q, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleSend(q)}
+                    className="whitespace-nowrap px-4 py-2.5 bg-white rounded-2xl transition-all border border-gray-200 text-gray-700 text-xs font-semibold shrink-0"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         ) : (
@@ -140,7 +175,7 @@ export default function AIChatView() {
       </div>
 
       {/* Input Area - Fixed Bottom */}
-      <div className="absolute bottom-1 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-6 pb-2 px-4">
+      <div className="absolute bottom-0 left-0 right-0 bg-white pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] px-4 border-t border-gray-50">
         <div className="max-w-5xl mx-auto relative">
           <div className="bg-gray-50 border border-gray-200 rounded-[2rem] flex items-center p-0.5 shadow-sm transition-all">
             <textarea

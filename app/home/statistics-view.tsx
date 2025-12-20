@@ -27,29 +27,41 @@ interface StatisticsViewProps {
 export default function StatisticsView({ courses, stats }: StatisticsViewProps) {
   return (
     <>
-      {/* İstatistik Kartları */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-        <div className="bg-white border-2 border-black rounded-lg p-3">
-          <p className="text-black text-[10px] font-bold uppercase tracking-wider mb-1">Genel İlerleme</p>
-          <p className="text-2xl font-black text-black mb-2">{stats.totalCompletion}%</p>
-          <div className="w-full bg-gray-100 rounded-full h-1.5">
-            <div
-              className="h-1.5 bg-black rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${stats.totalCompletion}%` }}
-            />
-          </div>
+      {/* İstatistikler - Rapor Formatı */}
+      <div className="bg-gray-50/50 rounded-2xl p-4 mb-4 mt-4 border border-gray-100">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Haftalık Performans Raporu</h3>
         </div>
 
-        <div className="bg-white border-2 border-gray-900 rounded-lg p-3">
-          <p className="text-gray-900 text-[10px] font-bold uppercase tracking-wider mb-1">Tamamlanan Konular</p>
-          <p className="text-2xl font-black text-black">
-            {stats.completedTopics}/{stats.totalTopics}
+        <div className="space-y-3">
+          <p className="text-sm text-gray-700 leading-relaxed">
+            Şu anki genel ilerlemen <span className="text-black font-bold">%{stats.totalCompletion}</span> seviyesinde.
+            Toplam <span className="text-black font-bold">{stats.totalTopics}</span> konudan
+            <span className="text-black font-bold"> {stats.completedTopics}</span> tanesini başarıyla tamamladın.
+            {stats.totalCompletion > 50 ? (
+              " Harika bir tempo yakalamışsın! Bu hızla devam edersen hedeflerine planladığından daha erken ulaşabilirsin. Özellikle son çalıştığın konulardaki verimliliğin oldukça yüksek görünüyor."
+            ) : (
+              " Henüz yolun başındasın ama istikrarlı bir çalışma ile netlerini hızla artırabiliriz. Eksik olduğun konulara odaklanmaya ne dersin? Unutma, her büyük başarı küçük bir adımla başlar."
+            )}
           </p>
-        </div>
 
-        <div className="bg-white border-2 border-gray-800 rounded-lg p-3">
-          <p className="text-gray-800 text-[10px] font-bold uppercase tracking-wider mb-1">Ders Sayısı</p>
-          <p className="text-2xl font-black text-black">{courses.length}</p>
+          <div className="grid grid-cols-2 gap-4 text-[11px] text-gray-500 pt-3 border-t border-gray-100">
+            <div className="space-y-1">
+              <p className="uppercase tracking-wider font-bold text-gray-400">Ders Durumu</p>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1 h-1 rounded-full bg-black" />
+                <span>{courses.length} Aktif Ders</span>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="uppercase tracking-wider font-bold text-gray-400">Konu Takibi</p>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1 h-1 rounded-full bg-gray-300" />
+                <span>{stats.totalTopics - stats.completedTopics} Kalan Konu</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

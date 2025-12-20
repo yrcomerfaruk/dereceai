@@ -126,21 +126,11 @@ function ClientLayoutInner() {
             }`}
         >
           <div className="flex items-center justify-between mb-4 px-1 py-1">
-            <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white font-bold text-xs ring-2 ring-gray-100 overflow-hidden ml-1">
-                <Image src="/logo.png" alt="Logo" width={32} height={32} />
-              </div>
+            <div className="flex items-center px-1">
+              <span className="text-lg font-black tracking-tighter text-black">
+                DERECE <span className="text-gray-400">AI</span>
+              </span>
             </div>
-            {/* Close button for mobile */}
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="md:hidden p-1 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Close menu"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
           </div>
           <ul className="space-y-2 flex-1">
             {navItems.map((item) => (
@@ -161,8 +151,14 @@ function ClientLayoutInner() {
               </li>
             ))}
           </ul>
-          <div className="border-t border-gray-700 pt-4 text-xs text-gray-900">
-            <p>Version 1.0</p>
+          <div className="border-t border-gray-100 pt-4 text-center">
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="md:hidden w-full text-center mb-3 text-[11px] font-black tracking-wide text-black hover:opacity-70 transition-opacity"
+            >
+              Menüyü Kapat
+            </button>
+            <p className="text-[10px] font-black text-black uppercase tracking-widest">Version 1.0</p>
           </div>
         </nav>
       )}
@@ -171,7 +167,7 @@ function ClientLayoutInner() {
         <HeaderArea onboardingComplete={onboardingComplete} currentPage={currentPage} setSidebarOpen={setSidebarOpen} />
 
         {/* Main Content */}
-        <main className={`flex-1 ${!onboardingComplete && currentPage === 'onboarding' ? 'p-0' : 'p-3 pb-8 pt-16 sm:p-4 md:p-6 md:pb-6 md:pt-6'} overflow-y-auto`}>
+        <main className={`flex-1 ${!onboardingComplete && currentPage === 'onboarding' ? 'p-0' : `p-3 pb-5 pt-12 sm:p-4 md:p-6 md:pb-6 md:pt-6 ${currentPage === 'home' ? 'overflow-hidden h-[calc(100dvh-48px)] md:h-screen' : 'overflow-y-auto'}`} `}>
           {renderPage()}
         </main>
       </div>
@@ -195,9 +191,7 @@ function HeaderArea({ onboardingComplete, currentPage, setSidebarOpen }: any) {
           <path d="M4 8h16M4 16h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-      <div className="ml-1 text-sm font-semibold text-gray-900">
-        {navItems.find(item => item.id === currentPage)?.label}
-      </div>
+      <div className="flex-1" />
       <div className="flex-1" />
       <div className="flex items-center">
         {headerActions}

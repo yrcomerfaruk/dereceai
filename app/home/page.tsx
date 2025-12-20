@@ -84,7 +84,7 @@ export default function HomePage() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto h-full flex flex-col">
       <div className="hidden md:flex mb-3 justify-end items-center">
         <div className="bg-gray-100 rounded-full p-0.5 flex items-center space-x-0.5">
           <button
@@ -109,7 +109,7 @@ export default function HomePage() {
       </div>
 
       {/* Tab Content */}
-      <div>
+      <div className="flex-1 min-h-0">
         {activeTab === 'statistics' && <StatisticsView courses={courses} stats={stats} />}
         {activeTab === 'coach' && <AIChatView />}
       </div>
