@@ -71,7 +71,7 @@ export default function AIChatView() {
   }, [input]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-100px)] relative -mx-3 -mb-3 sm:mx-0 sm:mb-0">
+    <div className="flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] relative -mx-3 -mb-6 sm:mx-0 sm:mb-0">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-4 pb-8">
         {messages.length === 0 ? (
@@ -149,7 +149,7 @@ export default function AIChatView() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Bir şeyler sor..."
-              className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 py-1.5 px-3 text-sm text-gray-700 placeholder-gray-400"
+              className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none resize-none max-h-32 py-1.5 px-3 text-sm text-gray-700 placeholder-gray-400 appearance-none"
               rows={1}
             />
             <button

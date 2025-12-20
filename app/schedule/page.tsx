@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useHeaderActions } from '../header-context';
 
 interface DaySchedule {
   day: string;
@@ -193,9 +194,32 @@ export default function SchedulePage() {
     return 1; // fallback 1 hour
   };
 
+  useHeaderActions(
+    <div className="md:hidden flex items-center bg-gray-100 rounded-full p-0.5 space-x-0.5">
+      <button
+        onClick={() => setView('takvim')}
+        className={`whitespace-nowrap px-2.5 py-1 rounded-full font-medium text-[12px] transition-all ${view === 'takvim'
+          ? 'bg-white text-gray-800 shadow-sm'
+          : 'text-gray-500 hover:text-gray-700'
+          }`}
+      >
+        Takvim
+      </button>
+      <button
+        onClick={() => setView('liste')}
+        className={`whitespace-nowrap px-2.5 py-1 rounded-full font-medium text-[12px] transition-all ${view === 'liste'
+          ? 'bg-white text-gray-800 shadow-sm'
+          : 'text-gray-500 hover:text-gray-700'
+          }`}
+      >
+        Liste
+      </button>
+    </div>
+  );
+
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-3 flex justify-center items-center">
+      <div className="hidden md:flex mb-3 justify-end items-center">
         <div className="bg-gray-100 rounded-full p-0.5 flex items-center space-x-0.5">
           <button
             onClick={() => setView('takvim')}

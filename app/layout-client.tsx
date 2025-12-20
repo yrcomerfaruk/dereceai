@@ -8,6 +8,7 @@ import HistoryPage from './history/page';
 import ProfilimPage from './profile/page';
 import PaymentsPage from './payments/page';
 import OnboardingPage from './onboarding/page';
+import { HeaderProvider, useHeaderActionsDisplay } from './header-context';
 
 type PageType = 'home' | 'schedule' | 'history' | 'profile' | 'payments' | 'onboarding';
 
@@ -64,6 +65,14 @@ const navItems = [
 ] as const;
 
 export default function ClientLayout() {
+  return (
+    <HeaderProvider>
+      <ClientLayoutInner />
+    </HeaderProvider>
+  );
+}
+
+function ClientLayoutInner() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
@@ -113,13 +122,26 @@ export default function ClientLayout() {
       {/* Sidebar */}
       {!onboardingComplete && currentPage === 'onboarding' ? null : (
         <nav
-          className={`w-44 bg-white text-gray-900 p-3 flex flex-col fixed inset-y-0 left-0 z-40 shadow-sm border-r transition-transform duration-300 transform md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          className={`w-44 bg-white text-gray-900 p-3 flex flex-col fixed inset-y-0 left-0 z-[100] shadow-sm border-r transition-transform duration-300 transform md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
         >
-          <h1 className="flex items-center px-2 py-2 mb-4 border-b border-gray-100">
-            <Image src="/logo.png" alt="Company Logo" width={35} height={35} />
-            <span className="text-lg font-semibold text-gray-900 ml-2">| Koç</span>
-          </h1>
+          <div className="flex items-center justify-between mb-4 px-1 py-1">
+            <div className="flex items-center">
+              <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white font-bold text-xs ring-2 ring-gray-100 overflow-hidden ml-1">
+                <Image src="/logo.png" alt="Logo" width={32} height={32} />
+              </div>
+            </div>
+            {/* Close button for mobile */}
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="md:hidden p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="Close menu"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
           <ul className="space-y-2 flex-1">
             {navItems.map((item) => (
               <li key={item.id}>
@@ -145,53 +167,41 @@ export default function ClientLayout() {
         </nav>
       )}
 
-      <div className={`flex flex-col flex-1 ${!onboardingComplete && currentPage === 'onboarding' ? '' : 'md:ml-44'} overflow-hidden`}>
+      <div className={`flex flex-col flex-1 ${!onboardingComplete && currentPage === 'onboarding' ? '' : 'md:ml-44'} overflow-hidden relative`}>
+        <HeaderArea onboardingComplete={onboardingComplete} currentPage={currentPage} setSidebarOpen={setSidebarOpen} />
+
         {/* Main Content */}
-        <main className={`flex-1 ${!onboardingComplete && currentPage === 'onboarding' ? 'p-0' : 'p-3 pb-24 sm:p-4 md:p-6 md:pb-6'} overflow-y-auto`}>
+        <main className={`flex-1 ${!onboardingComplete && currentPage === 'onboarding' ? 'p-0' : 'p-3 pb-8 pt-16 sm:p-4 md:p-6 md:pb-6 md:pt-6'} overflow-y-auto`}>
           {renderPage()}
         </main>
       </div>
+    </div>
+  );
+}
 
-      {/* Menu FAB */}
-      {!onboardingComplete && currentPage === 'onboarding' ? null : (
-        <div className="md:hidden fixed bottom-6 right-6 z-50">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="bg-black text-white p-3 rounded-full shadow-lg flex items-center justify-center"
-            aria-label="Toggle menu"
-          >
-            {sidebarOpen ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
-          </button>
-        </div>
-      )}
+function HeaderArea({ onboardingComplete, currentPage, setSidebarOpen }: any) {
+  const headerActions = useHeaderActionsDisplay();
 
-      {/* Mobile Bottom Nav */}
-      {!onboardingComplete && currentPage === 'onboarding' ? null : (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t flex justify-around py-2">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setCurrentPage(item.id as PageType);
-                setSidebarOpen(false);
-              }}
-              className={`flex flex-col items-center text-xs p-2 ${currentPage === item.id ? 'text-black font-semibold' : 'text-gray-600'}`}
-              aria-label={item.label}
-            >
-              <span style={{ display: 'inline-flex' }}>{item.icon}</span>
-              <span className="mt-1">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      )}
+  if (!onboardingComplete && currentPage === 'onboarding') return null;
+
+  return (
+    <div className="md:hidden fixed top-0 inset-x-0 h-12 bg-white/80 backdrop-blur-md border-b border-gray-100 z-[60] flex items-center px-4">
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="p-1.5 -ml-1.5 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors"
+        aria-label="Open menu"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 8h16M4 16h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      <div className="ml-1 text-sm font-semibold text-gray-900">
+        {navItems.find(item => item.id === currentPage)?.label}
+      </div>
+      <div className="flex-1" />
+      <div className="flex items-center">
+        {headerActions}
+      </div>
     </div>
   );
 }
