@@ -118,7 +118,7 @@ function ClientLayoutInner() {
   const currentPageLabel = navItems.find((item) => item.id === currentPage)?.label;
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex h-[100dvh] md:min-h-screen bg-white overflow-hidden">
       {/* Sidebar */}
       {!onboardingComplete && currentPage === 'onboarding' ? null : (
         <nav
@@ -167,7 +167,7 @@ function ClientLayoutInner() {
         </nav>
       )}
 
-      <div className={`flex flex-col flex-1 ${!onboardingComplete && currentPage === 'onboarding' ? '' : 'md:ml-44'} overflow-hidden relative`}>
+      <div className={`flex flex-col flex-1 ${!onboardingComplete && currentPage === 'onboarding' ? '' : 'md:ml-44'} overflow-hidden relative h-full`}>
         <HeaderArea onboardingComplete={onboardingComplete} currentPage={currentPage} setSidebarOpen={setSidebarOpen} />
 
         {/* Main Content */}

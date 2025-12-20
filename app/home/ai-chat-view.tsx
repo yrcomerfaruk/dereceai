@@ -71,16 +71,16 @@ export default function AIChatView() {
   }, [input]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-100px)] relative -mx-3 -mb-6 sm:mx-0 sm:mb-0">
+    <div className="flex flex-col h-[calc(100dvh-100px)] md:h-[calc(100vh-100px)] relative md:-mx-3 md:-mb-6 sm:mx-0 sm:mb-0">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-4 pb-8">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center space-y-8 opacity-0 animate-fade-in" style={{ animationFillMode: 'forwards' }}>
             <div className="space-y-2">
-              <h2 className="text-3xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-bold text-black">
                 Merhaba, Koçun Burada!
               </h2>
-              <p className="text-gray-500 text-lg">Sana nasıl yardımcı olabilirim?</p>
+              <p className="text-gray-500 text-lg font-medium">Sana nasıl yardımcı olabilirim?</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl px-4">
@@ -110,10 +110,10 @@ export default function AIChatView() {
                 >
                   {msg.role === 'assistant' && (
                     <div className="flex items-center gap-2 mb-1">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
+                      <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold">
                         AI
                       </div>
-                      <span className="text-xs font-medium text-gray-500">Derece Koçu</span>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Derece Koçu</span>
                     </div>
                   )}
                   <p className="leading-relaxed whitespace-pre-wrap text-sm">{msg.content}</p>
@@ -123,13 +123,13 @@ export default function AIChatView() {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
+                  <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold">
                     AI
                   </div>
-                  <div className="flex gap-1 bg-gray-50 px-4 py-3 rounded-2xl rounded-tl-sm">
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className="flex gap-1 bg-gray-50 px-3 py-2 rounded-2xl rounded-tl-sm border border-gray-100">
+                    <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               </div>
@@ -140,7 +140,7 @@ export default function AIChatView() {
       </div>
 
       {/* Input Area - Fixed Bottom */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-6 pb-0 px-4">
+      <div className="absolute bottom-1 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-6 pb-2 px-4">
         <div className="max-w-5xl mx-auto relative">
           <div className="bg-gray-50 border border-gray-200 rounded-[2rem] flex items-center p-0.5 shadow-sm transition-all">
             <textarea

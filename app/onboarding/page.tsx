@@ -115,7 +115,7 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
                         {selectedOptions.length > 0 && (
                             <button
                                 onClick={() => handleAnswer(selectedOptions)}
-                                className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group shadow-sm"
+                                className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group"
                             >
                                 <span>Devam Et</span>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:translate-x-1 transition-transform">
@@ -152,7 +152,7 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
                         {Object.keys(subjectStatus).length === subjects.length && (
                             <button
                                 onClick={() => handleAnswer(subjectStatus)}
-                                className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group shadow-sm"
+                                className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group"
                             >
                                 <span>Devam Et</span>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:translate-x-1 transition-transform">
@@ -203,7 +203,7 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
                         {selectedOptions.length > 0 && (
                             <button
                                 onClick={() => handleAnswer(selectedOptions)}
-                                className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group shadow-sm"
+                                className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group"
                             >
                                 <span>Devam Et</span>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:translate-x-1 transition-transform">
@@ -237,7 +237,7 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
                         </div>
                         <button
                             onClick={() => handleAnswer({ current: 0, target: 0 })}
-                            className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group shadow-sm"
+                            className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group"
                         >
                             <span>Devam Et</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:translate-x-1 transition-transform">
@@ -268,7 +268,7 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
                         </div>
                         <button
                             onClick={() => handleAnswer({ start: '09:00', end: '18:00' })}
-                            className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group shadow-sm"
+                            className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group"
                         >
                             <span>Devam Et</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:translate-x-1 transition-transform">
@@ -295,7 +295,7 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
                         </div>
                         <button
                             onClick={() => handleAnswer({ start: 'Pazartesi', rest: 'Pazar' })}
-                            className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group shadow-sm"
+                            className="w-full py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all text-sm font-semibold mt-4 flex items-center justify-center gap-2 group"
                         >
                             <span>Tamamla</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -313,18 +313,18 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
     return (
         <div className="min-h-screen bg-white flex flex-col">
             {/* Top Navigation */}
-            <div className="p-4 flex items-center justify-between">
-                <div className="w-10 h-10" /> {/* Spacer */}
+            <div className="py-1 px-4 flex items-center justify-between min-h-[28px]">
+                <div className="w-8 h-8 flex items-center justify-center" /> {/* Spacer */}
 
-                <div className="text-xs font-semibold text-gray-400 tracking-wider">
+                <div className="text-[10px] font-bold text-gray-400 tracking-widest leading-none">
                     {Math.round(progress)}% TAMAMLANDI
                 </div>
 
-                <div className="w-10 h-10" /> {/* Spacer */}
+                <div className="w-8 h-8 flex items-center justify-center" /> {/* Spacer */}
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full h-1 bg-gray-100">
+            <div className="w-full h-0.5 bg-gray-100">
                 <div
                     className="h-full bg-black transition-all duration-500 ease-out"
                     style={{ width: `${progress}%` }}
@@ -354,12 +354,13 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
                         <div className="flex justify-center mt-12 pb-8">
                             <button
                                 onClick={handleBack}
-                                className="p-3 text-gray-300 hover:text-black transition-all transform hover:-translate-y-1"
+                                className="flex items-center gap-2 px-6 py-2.5 text-gray-500 hover:text-black hover:bg-gray-50 rounded-full transition-all group font-medium border border-gray-100"
                                 aria-label="Geri git"
                             >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:-translate-x-1 transition-transform">
+                                    <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
+                                <span>Geri Git</span>
                             </button>
                         </div>
                     )}
