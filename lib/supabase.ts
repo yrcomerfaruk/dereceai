@@ -1,13 +1,13 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Fallback to placeholder to prevent build crash if env vars are missing (e.g. during specific Vercel build phases or if forgotten)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
 
-if (!supabaseUrl || !supabaseKey) {
-    // Only log in development to avoid leaking info, but here needed for debugging
-    console.error('Supabase Credentials Missing in Client. Check .env.local');
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    console.warn('Supabase Environment Variables are missing. Authentication will not work.');
 }
 
-export const supabase = createClient(supabaseUrl || '', supabaseKey || '');
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
