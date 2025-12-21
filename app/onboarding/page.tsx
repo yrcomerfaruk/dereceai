@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 interface Question {
     id: string;
@@ -47,8 +48,9 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
     const currentQuestion = questions[currentStep];
     const progress = (currentStep / questions.length) * 100;
 
-    const handleAnswer = (answer: any) => {
-        setAnswers({ ...answers, [currentQuestion.id]: answer });
+    const handleAnswer = async (answer: any) => {
+        const newAnswers = { ...answers, [currentQuestion.id]: answer };
+        setAnswers(newAnswers);
 
         if (currentStep < questions.length - 1) {
             setCurrentStep(currentStep + 1);
@@ -56,11 +58,46 @@ export default function OnboardingPage({ onComplete }: { onComplete?: () => void
             setSubjectStatus({});
             setCustomInput('');
         } else {
-            localStorage.setItem('onboardingData', JSON.stringify({ ...answers, [currentQuestion.id]: answer }));
-            if (onComplete) {
-                onComplete();
-            } else {
-                router.push('/home');
+            // Final Step: Save to Supabase
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error("Kullanıcı oturumu bulunamadı.");
+
+                // Prepare data for 'profiles' table
+                const profileData = {
+                    id: user.id,
+                    email: user.email,
+                    grade: newAnswers.grade,
+                    department: newAnswers.department,
+                    target_score: newAnswers.nets?.target ? parseInt(newAnswers.nets.target) : 0,
+                    // Default exam date or derived
+                    exam_date: '2026-06-15',
+                    weekly_hours: newAnswers.studyHours ? 30 : 0, // Simplified or derived
+                    teachers: newAnswers.teachers || [],
+                    books: newAnswers.books || [],
+                    onboarding_completed: true,
+                    updated_at: new Date().toISOString(),
+                    metadata: newAnswers // Store all answers as JSON for flexibility
+                };
+
+                const { error } = await supabase
+                    .from('profiles')
+                    .upsert(profileData);
+
+                if (error) throw error;
+
+                // Also update localStorage as a fallback/cache if desired, or remove it. 
+                // Keeping it for now if other parts rely on it momentarily, but generally should remove.
+                localStorage.setItem('onboardingData', JSON.stringify(newAnswers));
+
+                if (onComplete) {
+                    onComplete();
+                } else {
+                    router.push('/home');
+                }
+            } catch (error) {
+                console.error("Onboarding kaydetme hatası:", error);
+                alert("Veriler kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.");
             }
         }
     };

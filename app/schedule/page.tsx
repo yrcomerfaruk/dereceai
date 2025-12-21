@@ -304,16 +304,16 @@ export default function SchedulePage() {
             const allTopicsCompleted = daySchedule.topics.length > 0 && daySchedule.topics.every(t => t.completed);
             const isExpanded = expandedDays.has(daySchedule.day);
             return (
-              <div key={daySchedule.day} className={`border border-gray-200 rounded-xl bg-white transition-all overflow-hidden ${daySchedule.date === todayStr ? 'ring-1 ring-black border-black' : ''}`}>
+              <div key={daySchedule.day} className={`border border-gray-300 rounded-lg bg-white transition-all overflow-hidden ${daySchedule.date === todayStr ? 'ring-1 ring-black border-black' : ''}`}>
                 <div
-                  className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="flex justify-between items-center p-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-200"
                   onClick={() => toggleDayExpansion(daySchedule.day)}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-1.5 h-1.5 rounded-full ${daySchedule.date === todayStr ? 'bg-black animate-pulse' : 'bg-gray-300'}`} />
                     <div className="flex flex-col">
-                      <p className="text-sm font-bold text-gray-900 uppercase tracking-wider">{daySchedule.day}</p>
-                      <p className="text-xs font-medium text-gray-400">{daySchedule.date.split('-').reverse().slice(0, 2).join('.')}</p>
+                      <p className="text-sm font-bold text-gray-900">{daySchedule.day}</p>
+                      <p className="text-xs font-medium text-gray-500">{daySchedule.date.split('-').reverse().slice(0, 2).join('.')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -322,7 +322,7 @@ export default function SchedulePage() {
                         e.stopPropagation();
                         toggleComplete(daySchedule.day);
                       }}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold uppercase tracking-wide border transition-all ${allTopicsCompleted ? 'bg-black text-white border-black' : 'bg-white text-gray-400 border-gray-200 hover:border-black hover:text-black'}`}
+                      className={`px-3 py-1 rounded text-xs font-semibold border transition-all ${allTopicsCompleted ? 'bg-black text-white border-black' : 'bg-white text-gray-500 border-gray-300 hover:border-black hover:text-black'}`}
                     >
                       {allTopicsCompleted ? 'Tamamlandı' : 'Bitir'}
                     </button>
@@ -331,46 +331,46 @@ export default function SchedulePage() {
                       className="text-gray-400 transition-transform duration-300"
                       style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
                     >
-                      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
 
                 {/* Konular (Accordion Content) */}
                 {isExpanded && (
-                  <div className="px-4 pb-4 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="p-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
                     {daySchedule.topics.map((topic, tIdx) => (
                       <div
                         key={tIdx}
                         onClick={() => toggleTopic(idx, tIdx)}
-                        className={`p-3 rounded-xl text-sm cursor-pointer transition-all border ${topic.completed
+                        className={`p-2 rounded cursor-pointer transition-all border ${topic.completed
                           ? 'bg-gray-50 text-gray-400 border-transparent'
-                          : 'bg-white text-gray-700 border-gray-100 hover:border-black active:scale-[0.98]'
+                          : 'bg-gray-50 text-gray-900 border-transparent hover:bg-gray-100'
                           }`}
                       >
                         <div className="flex justify-between items-start gap-2">
-                          <p className={`font-semibold flex-1 leading-tight ${topic.completed ? 'line-through opacity-50' : ''}`}>
+                          <p className={`font-semibold text-xs flex-1 leading-tight ${topic.completed ? 'line-through opacity-50' : ''}`}>
                             {topic.name}
                           </p>
-                          <span className="text-xs font-medium text-gray-400 shrink-0">
+                          <span className="text-xs font-medium text-gray-500 shrink-0">
                             {formatTimeRange(topic.startHour || 9, topic.duration)}
                           </span>
                         </div>
-                        <p className="text-xs font-medium text-gray-400 mt-1 uppercase tracking-tight">{topic.duration}</p>
+                        <p className="text-[10px] font-medium text-gray-400 mt-1">{topic.duration}</p>
                       </div>
                     ))}
 
                     {/* Notlar */}
                     {daySchedule.notes && (
-                      <div className="mt-4 pt-4 border-t border-gray-50">
+                      <div className="mt-3 pt-3 border-t border-gray-100">
                         <div className="flex items-center gap-2 mb-1">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-400">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
-                          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Günün Notu</p>
+                          <p className="text-xs font-semibold text-gray-500">Günün Notu</p>
                         </div>
-                        <p className="text-sm text-gray-500 italic leading-relaxed pl-5">"{daySchedule.notes}"</p>
+                        <p className="text-xs text-gray-600 italic leading-relaxed pl-5">"{daySchedule.notes}"</p>
                       </div>
                     )}
                   </div>

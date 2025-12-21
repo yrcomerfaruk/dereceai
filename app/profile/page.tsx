@@ -1,123 +1,248 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '../auth-provider';
+import ClientOnlyDate from './client-date';
 
 interface StudentProfile {
   name: string;
   targetScore: number;
+  currentNet: number;
   examDate: string;
   weeklyHours: number;
+  grade: string;
+  department: string;
   teachers: { subject: string; name: string }[];
   books: { name: string; subject: string }[];
   completedTopics: number;
   totalTopics: number;
+  studyStart: string;
+  highschool: string;
+  sessionLength: string;
+  resources: string[];
 }
 
 export default function ProfilePage() {
-  const [profile] = useState<StudentProfile>({
-    name: 'Öğrenci',
-    targetScore: 500,
-    examDate: '2025-06-15',
-    weeklyHours: 30,
-    teachers: [
-      { subject: 'Matematik', name: 'Prof. Ahmet Yılmaz' },
-      { subject: 'Türkçe', name: 'Yrd. Doç. Ayşe Kaya' },
-      { subject: 'Fen', name: 'Dr. Mehmet Öz' },
-    ],
-    books: [
-      { name: 'Matematik Ön Bilgiler', subject: 'Matematik' },
-      { name: 'Türkçe Okuma Parçaları', subject: 'Türkçe' },
-      { name: 'Kimya Reaksiyonları', subject: 'Fen' },
-    ],
-    completedTopics: 12,
-    totalTopics: 25,
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<StudentProfile>({
+    name: 'Yükleniyor...',
+    targetScore: 0,
+    currentNet: 0,
+    examDate: '2026-06-15',
+    weeklyHours: 0,
+    grade: '',
+    department: '',
+    teachers: [],
+    books: [],
+    completedTopics: 0,
+    totalTopics: 100,
+    studyStart: '',
+    highschool: '',
+    sessionLength: '',
+    resources: [],
   });
 
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+          const teacherNames: string[] = Array.isArray(data.teachers) ? data.teachers : [];
+          const teacherObjects = teacherNames.map(t => ({ subject: 'Genel', name: t }));
+
+          const bookNames: string[] = Array.isArray(data.books) ? data.books : [];
+          const bookObjects = bookNames.map(b => ({ name: b, subject: 'TYT/AYT' }));
+
+          const meta = data.metadata || {};
+
+          setProfile({
+            name: user.user_metadata?.full_name || data.email?.split('@')[0] || 'Öğrenci',
+            targetScore: data.target_score || 0,
+            currentNet: meta.nets?.current ? parseInt(meta.nets.current) : 0,
+            examDate: data.exam_date || '2026-06-15',
+            weeklyHours: data.weekly_hours || 0,
+            grade: data.grade || '',
+            department: data.department || '',
+            teachers: teacherObjects,
+            books: bookObjects,
+            completedTopics: 12, // Placeholder
+            totalTopics: 25, // Placeholder
+            studyStart: meta.studyStart || '',
+            highschool: meta.highschool || '',
+            sessionLength: meta.sessionLength || '',
+            resources: Array.isArray(meta.resources) ? meta.resources : [],
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProfile();
+  }, [user]);
+
+  const handleResetOnboarding = async () => {
+    if (!user) return;
+    if (confirm('Tüm ilerlemeniz sıfırlanacak ve onboarding ekranına döneceksiniz. Emin misiniz? ("profiles" tablosu güncellenecek)')) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ onboarding_completed: false })
+          .eq('id', user.id);
+
+        if (error) throw error;
+
+        localStorage.removeItem('onboardingData');
+        window.location.reload();
+      } catch (e) {
+        console.error(e);
+        alert("Sıfırlama başarısız oldu.");
+      }
+    }
+  };
+
+  if (loading) return <div className="p-10 text-center text-black font-medium">Yükleniyor...</div>;
+
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto space-y-3">
+      {/* Üst Kısım Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Temel Bilgiler */}
         <div className="border border-gray-300 rounded-lg p-3 bg-white">
           <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
-            <h3 className="text-sm font-bold text-gray-900">Temel Bilgiler</h3>
-            <button className="text-gray-400 hover:text-gray-700 text-xs transition-colors">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 21v-3.75L14.06 6.19a2 2 0 0 1 2.83 0l1.92 1.92a2 2 0 0 1 0 2.83L7.75 22H4a1 1 0 0 1-1-1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+            <h3 className="text-sm font-bold text-gray-900">Kimlik Kartı</h3>
+            <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-600 font-medium">Genel</span>
           </div>
           <div className="space-y-2">
             <div>
               <p className="text-xs text-gray-500 mb-0.5">Adı</p>
-              <p className="text-gray-900 text-sm">{profile.name}</p>
+              <p className="text-gray-900 text-sm font-semibold">{profile.name}</p>
             </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <p className="text-xs text-gray-500 mb-0.5">Sınıf</p>
+                <p className="text-gray-900 text-sm">{profile.grade || '-'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-0.5">Alan</p>
+                <p className="text-gray-900 text-sm">{profile.department || '-'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hedef ve Performans */}
+        <div className="border border-gray-300 rounded-lg p-3 bg-white">
+          <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
+            <h3 className="text-sm font-bold text-gray-900">Hedefler</h3>
+            <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-600 font-medium">Puan</span>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-gray-500 mb-0.5">Hedef Puan</p>
-              <p className="text-gray-900 text-sm">{profile.targetScore}</p>
+              <p className="text-gray-900 text-2xl font-black">{profile.targetScore}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-0.5">Sınav Tarihi</p>
-              <p className="text-gray-900 text-sm">{profile.examDate}</p>
+              <p className="text-xs text-gray-500 mb-0.5">Şu Anki Net</p>
+              <p className="text-gray-900 text-2xl font-black">{profile.currentNet}</p>
+            </div>
+          </div>
+          <div className="mt-2 text-xs text-gray-400">
+            Sınav Tarihi: <span className="text-gray-900 font-medium">{profile.examDate}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Orta Kısım Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* Çalışma Düzeni */}
+        <div className="border border-gray-300 rounded-lg p-3 bg-white">
+          <h3 className="text-sm font-bold text-gray-900 mb-2 pb-2 border-b border-gray-200">Çalışma Düzeni</h3>
+          <div className="space-y-3">
+            <div>
+              <p className="text-xs text-gray-500 mb-0.5">Haftalık Süre</p>
+              <p className="text-gray-900 text-sm font-medium">{profile.weeklyHours} Saat</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-0.5">Haftalık Çalışma Saati</p>
-              <p className="text-gray-900 text-sm">{profile.weeklyHours} saat</p>
+              <p className="text-xs text-gray-500 mb-0.5">Etüt Süresi</p>
+              <p className="text-gray-900 text-sm font-medium">{profile.sessionLength || '-'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 mb-0.5">Başlangıç Zamanı</p>
+              <p className="text-gray-900 text-sm font-medium">{profile.studyStart || '-'}</p>
             </div>
           </div>
         </div>
 
         {/* İstatistikler */}
         <div className="border border-gray-300 rounded-lg p-3 bg-white">
-          <h3 className="text-sm font-bold text-gray-900 mb-2 pb-2 border-b border-gray-200">
-            İlerleme
-          </h3>
-          <div className="space-y-3">
+          <h3 className="text-sm font-bold text-gray-900 mb-2 pb-2 border-b border-gray-200">İstatistikler</h3>
+          <div className="space-y-4">
             <div>
               <div className="flex justify-between mb-1">
-                <p className="text-xs text-gray-500">Tamamlanan Konular</p>
-                <p className="text-xs font-semibold text-gray-900">
-                  {profile.completedTopics}/{profile.totalTopics}
-                </p>
+                <p className="text-xs text-gray-500">Konu İlerlemesi</p>
+                <p className="text-xs font-semibold text-gray-900">{profile.completedTopics}/{profile.totalTopics}</p>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="h-2 bg-gray-700 rounded-full"
-                  style={{
-                    width: `${(profile.completedTopics / profile.totalTopics) * 100}%`,
-                  }}
-                />
+              <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div className="h-1.5 bg-black rounded-full" style={{ width: `${(profile.completedTopics / profile.totalTopics) * 100}%` }} />
               </div>
             </div>
-
             <div>
-              <p className="text-xs text-gray-500 mb-1">Sınavaya Kalan Gün</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {Math.ceil(
-                  (new Date(profile.examDate).getTime() - new Date().getTime()) /
-                  (1000 * 60 * 60 * 24)
-                )}
-              </p>
+              <p className="text-xs text-gray-500 mb-1">Kalan Gün</p>
+              <ClientOnlyDate targetDate={profile.examDate} />
             </div>
           </div>
         </div>
 
+        {/* Kaynaklar & Geçmiş */}
+        <div className="border border-gray-300 rounded-lg p-3 bg-white">
+          <h3 className="text-sm font-bold text-gray-900 mb-2 pb-2 border-b border-gray-200">Detaylar</h3>
+          <div className="space-y-2">
+            <div>
+              <p className="text-xs text-gray-500 mb-0.5">Lise Durumu</p>
+              <p className="text-gray-900 text-xs font-medium">{profile.highschool || '-'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 mb-0.5">Kaynak Türleri</p>
+              <div className="flex flex-wrap gap-1">
+                {profile.resources.length > 0 ? profile.resources.map(r => (
+                  <span key={r} className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">{r}</span>
+                )) : <span className="text-gray-400 text-xs">-</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Alt Kısım Grid - Öğretmenler ve Kitaplar */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Öğretmenler */}
         <div className="border border-gray-300 rounded-lg p-3 bg-white">
           <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
             <h3 className="text-sm font-bold text-gray-900">Öğretmenler</h3>
-            <button className="text-gray-400 hover:text-gray-700 text-xs transition-colors">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 21v-3.75L14.06 6.19a2 2 0 0 1 2.83 0l1.92 1.92a2 2 0 0 1 0 2.83L7.75 22H4a1 1 0 0 1-1-1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+            <span className="text-xs text-gray-500">{profile.teachers.length} Kişi</span>
           </div>
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
             {profile.teachers.map((teacher, idx) => (
-              <div key={idx} className="bg-gray-50 p-2 rounded">
-                <p className="font-semibold text-gray-900 text-xs">{teacher.subject}</p>
-                <p className="text-gray-600 text-xs">{teacher.name}</p>
+              <div key={idx} className="bg-gray-50 p-2 rounded border border-gray-100">
+                <p className="font-semibold text-gray-900 text-xs truncate">{teacher.name}</p>
+                <p className="text-gray-500 text-[10px]">{teacher.subject}</p>
               </div>
             ))}
+            {profile.teachers.length === 0 && <p className="text-xs text-gray-400 col-span-2">Henüz öğretmen eklenmedi.</p>}
           </div>
         </div>
 
@@ -125,39 +250,31 @@ export default function ProfilePage() {
         <div className="border border-gray-300 rounded-lg p-3 bg-white">
           <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200">
             <h3 className="text-sm font-bold text-gray-900">Kitaplar</h3>
-            <button className="text-gray-400 hover:text-gray-700 text-xs transition-colors">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 21v-3.75L14.06 6.19a2 2 0 0 1 2.83 0l1.92 1.92a2 2 0 0 1 0 2.83L7.75 22H4a1 1 0 0 1-1-1z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+            <span className="text-xs text-gray-500">{profile.books.length} Kitap</span>
           </div>
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
             {profile.books.map((book, idx) => (
-              <div key={idx} className="bg-gray-50 p-2 rounded">
-                <p className="font-semibold text-gray-900 text-xs">{book.name}</p>
-                <p className="text-gray-600 text-xs">{book.subject}</p>
+              <div key={idx} className="bg-gray-50 p-2 rounded border border-gray-100">
+                <p className="font-semibold text-gray-900 text-xs truncate">{book.name}</p>
+                <p className="text-gray-500 text-[10px]">{book.subject}</p>
               </div>
             ))}
+            {profile.books.length === 0 && <p className="text-xs text-gray-400 col-span-2">Henüz kitap eklenmedi.</p>}
           </div>
         </div>
       </div>
 
       {/* Reset Button for Testing/Re-onboarding */}
-      <div className="mt-8 flex justify-center">
+      <div className="mt-4 flex justify-center">
         <button
-          onClick={() => {
-            if (confirm('Tüm verileriniz sıfırlanacak ve onboarding tekrar başlayacak. Emin misiniz?')) {
-              localStorage.removeItem('onboardingData');
-              window.location.reload();
-            }
-          }}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg text-xs font-medium transition-all border border-gray-200"
+          onClick={handleResetOnboarding}
+          className="text-gray-400 hover:text-red-600 text-[10px] transition-colors flex items-center gap-1"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M21 12a9 9 0 1 1-3.5-7l-1 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M12 7v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 12a9 9 0 1 1-3.5-7l-1 1" />
+            <path d="M12 7v6l4 2" />
           </svg>
-          Onboarding'i Sıfırla ve Yeniden Başlat
+          Sıfırla
         </button>
       </div>
     </div>
