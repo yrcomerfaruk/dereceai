@@ -30,7 +30,6 @@ export default function AIChatView() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const [programData, setProgramData] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -40,50 +39,42 @@ export default function AIChatView() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Load messages from Supabase on mount
+  // Load chat history from database on mount
   useEffect(() => {
-    async function loadMessages() {
-      setIsLoadingMessages(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsLoadingMessages(false);
-        return;
-      }
+    async function loadHistory() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      const { data, error } = await supabase
-        .from('chat_messages')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true })
-        .limit(50);
+        const { data, error } = await supabase
+          .from('chat_messages')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true })
+          .limit(20);
 
-      if (data && !error) {
-        const loadedMessages: Message[] = [];
-        data.forEach((msg: any) => {
-          loadedMessages.push({
-            id: `${msg.id}-user`,
-            role: 'user',
-            content: msg.message
+        if (data && !error) {
+          const loadedMessages: Message[] = [];
+          data.forEach((msg: any) => {
+            loadedMessages.push({
+              id: `${msg.id}-user`,
+              role: 'user',
+              content: msg.message
+            });
+            loadedMessages.push({
+              id: `${msg.id}-assistant`,
+              role: 'assistant',
+              content: msg.response
+            });
           });
-          loadedMessages.push({
-            id: `${msg.id}-ai`,
-            role: 'assistant',
-            content: msg.response
-          });
-        });
-        setMessages(loadedMessages);
+          setMessages(loadedMessages);
+        }
+      } catch (e) {
+        console.error('Error loading history:', e);
       }
-      setIsLoadingMessages(false);
     }
-    loadMessages();
+    loadHistory();
   }, []);
-
-  // Remove localStorage save
-  // useEffect(() => {
-  //   if (messages.length > 0) {
-  //     localStorage.setItem('chat_messages', JSON.stringify(messages));
-  //   }
-  // }, [messages]);
 
   useEffect(() => {
     scrollToBottom();
@@ -136,7 +127,7 @@ export default function AIChatView() {
             // Remove the JSON block from display to keep it clean, or keep it?
             // Let's keep it but maybe we remove it if we render a custom component.
             // For now, let's strip it to avoid clutter.
-            aiContent = aiContent.replace(/```json\s*[\s\S]*?\s*```/, '').trim();
+            aiContent = aiContent.replace(jsonMatch[0], '').trim();
             aiContent += "\n\n**Haftalık programın hazır!** Aşağıdaki butona tıklayarak takvimine ekleyebilirsin.";
           }
         } catch (e) {
@@ -167,34 +158,9 @@ export default function AIChatView() {
 
   const handleSaveProgram = async () => {
     if (!programData) return;
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        alert('Lütfen giriş yapın');
-        return;
-      }
-
-      // Save each day's sessions to database
-      for (const day of programData) {
-        await supabase.from('schedules').insert({
-          user_id: user.id,
-          title: `${day.day} - Çalışma`,
-          description: day.sessions.join(', '),
-          date: new Date().toISOString(),
-          type: 'study'
-        });
-      }
-
-      // Clear program data
-      setProgramData(null);
-
-      alert('Program takvime başarıyla eklendi!');
-      router.push('/schedule');
-    } catch (error) {
-      console.error('Save error:', error);
-      alert('Program kaydedilirken hata oluştu');
-    }
+    // TODO: Save to database logic here
+    alert("Program takvime başarıyla eklendi! (Demo)");
+    router.push('/schedule');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -222,11 +188,7 @@ export default function AIChatView() {
     <div className="flex flex-col h-full relative">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-4 pb-8">
-        {isLoadingMessages ? (
-          <div className="h-full flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-          </div>
-        ) : messages.length === 0 ? (
+        {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center space-y-8 opacity-0 animate-fade-in" style={{ animationFillMode: 'forwards' }}>
             <div className="space-y-2">
               <h2 className="text-2xl font-bold text-black">
@@ -245,7 +207,7 @@ export default function AIChatView() {
                   <button
                     key={i}
                     onClick={() => handleSend(q)}
-                    className="whitespace-nowrap px-3 py-1.5 bg-white rounded-xl transition-all border border-gray-200 text-gray-700 text-[11px] font-medium shrink-0"
+                    className="whitespace-nowrap px-4 py-2.5 bg-white rounded-2xl transition-all border border-gray-200 text-gray-700 text-xs font-semibold shrink-0"
                   >
                     {q}
                   </button>
@@ -260,7 +222,7 @@ export default function AIChatView() {
                   <button
                     key={i}
                     onClick={() => handleSend(q)}
-                    className="whitespace-nowrap px-3 py-1.5 bg-white rounded-xl transition-all border border-gray-200 text-gray-700 text-[11px] font-medium shrink-0"
+                    className="whitespace-nowrap px-4 py-2.5 bg-white rounded-2xl transition-all border border-gray-200 text-gray-700 text-xs font-semibold shrink-0"
                   >
                     {q}
                   </button>

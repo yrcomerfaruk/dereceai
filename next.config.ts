@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverExternalPackages: [
+    "langchain",
+    "@langchain/core",
+    "@langchain/google-genai",
+    "@langchain/community",
+    "@google/generative-ai"
+  ],
 };
 
 export default nextConfig;

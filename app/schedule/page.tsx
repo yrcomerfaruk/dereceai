@@ -28,138 +28,80 @@ export default function SchedulePage() {
   const todayStr = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
-    const mockSchedule: DaySchedule[] = [
-      {
-        day: 'Pazartesi',
-        date: '2025-12-22',
-        topics: [
-          { name: 'TYT Türkçe - Paragraf', duration: '1 saat', edited: false, startHour: 8 },
-          { name: 'TYT Matematik - Sayılar', duration: '1 saat', edited: false, startHour: 9.25 },
-          { name: 'TYT Matematik - Sayılar Soru Çözümü', duration: '1 saat', edited: false, startHour: 10.5 },
-          { name: 'TYT Fizik - Madde ve Özellikleri', duration: '1 saat', edited: false, startHour: 11.75 },
-          { name: 'Öğle Molası', duration: '1 saat', edited: false, startHour: 12.75 },
-          { name: 'AYT Matematik - Fonksiyonlar', duration: '1 saat', edited: false, startHour: 13.75 },
-          { name: 'AYT Matematik - Fonksiyonlar Soru Çözümü', duration: '1 saat', edited: false, startHour: 15 },
-          { name: 'TYT Biyoloji - Canlıların Ortak Özellikleri', duration: '1 saat', edited: false, startHour: 16.25 },
-          { name: 'TYT Kimya - Kimya Bilimi', duration: '1 saat', edited: false, startHour: 17.5 },
-          { name: 'Günün Tekrarı ve Planlama', duration: '1 saat', edited: false, startHour: 18.75 },
-        ],
-        notes: 'Haftaya enerjik başla!',
-        completed: false,
-      },
-      {
-        day: 'Salı',
-        date: '2025-12-23',
-        topics: [
-          { name: 'TYT Türkçe - Dil Bilgisi', duration: '1 saat', edited: false, startHour: 8 },
-          { name: 'TYT Matematik - Bölme Bölünebilme', duration: '1 saat', edited: false, startHour: 9.25 },
-          { name: 'TYT Geometri - Doğruda Açılar', duration: '1 saat', edited: false, startHour: 10.5 },
-          { name: 'TYT Tarih - Tarih ve Zaman', duration: '1 saat', edited: false, startHour: 11.75 },
-          { name: 'Öğle Molası', duration: '1 saat', edited: false, startHour: 12.75 },
-          { name: 'AYT Matematik - Polinomlar', duration: '1 saat', edited: false, startHour: 13.75 },
-          { name: 'AYT Matematik - Polinomlar Soru Çözümü', duration: '1 saat', edited: false, startHour: 15 },
-          { name: 'TYT Fizik - Hareket', duration: '1 saat', edited: false, startHour: 16.25 },
-          { name: 'TYT Coğrafya - Doğa ve İnsan', duration: '1 saat', edited: false, startHour: 17.5 },
-          { name: 'Günün Tekrarı', duration: '1 saat', edited: false, startHour: 18.75 },
-        ],
-        notes: 'Geometriye odaklan.',
-        completed: false,
-      },
-      {
-        day: 'Çarşamba',
-        date: '2025-12-24',
-        topics: [
-          { name: 'TYT Türkçe - Paragraf', duration: '1 saat', edited: false, startHour: 8 },
-          { name: 'TYT Matematik - EBOB EKOK', duration: '1 saat', edited: false, startHour: 9.25 },
-          { name: 'TYT Matematik - Rasyonel Sayılar', duration: '1 saat', edited: false, startHour: 10.5 },
-          { name: 'TYT Kimya - Atom ve Periyodik Sistem', duration: '1 saat', edited: false, startHour: 11.75 },
-          { name: 'Öğle Molası', duration: '1 saat', edited: false, startHour: 12.75 },
-          { name: 'AYT Matematik - Denklemler', duration: '1 saat', edited: false, startHour: 13.75 },
-          { name: 'AYT Matematik - Denklemler Soru Çözümü', duration: '1 saat', edited: false, startHour: 15 },
-          { name: 'TYT Biyoloji - Hücre', duration: '1 saat', edited: false, startHour: 16.25 },
-          { name: 'TYT Felsefe - Felsefeye Giriş', duration: '1 saat', edited: false, startHour: 17.5 },
-          { name: 'Günün Tekrarı', duration: '1 saat', edited: false, startHour: 18.75 },
-        ],
-        notes: 'Kimya atom modellerini unutma.',
-        completed: false,
-      },
-      {
-        day: 'Perşembe',
-        date: '2025-12-25',
-        topics: [
-          { name: 'TYT Türkçe - Yazım Kuralları', duration: '1 saat', edited: false, startHour: 8 },
-          { name: 'TYT Matematik - Basit Eşitsizlikler', duration: '1 saat', edited: false, startHour: 9.25 },
-          { name: 'TYT Geometri - Üçgende Açılar', duration: '1 saat', edited: false, startHour: 10.5 },
-          { name: 'TYT Fizik - İş Güç Enerji', duration: '1 saat', edited: false, startHour: 11.75 },
-          { name: 'Öğle Molası', duration: '1 saat', edited: false, startHour: 12.75 },
-          { name: 'AYT Matematik - Eşitsizlikler', duration: '1 saat', edited: false, startHour: 13.75 },
-          { name: 'AYT Matematik - Eşitsizlikler Soru Çözümü', duration: '1 saat', edited: false, startHour: 15 },
-          { name: 'TYT Tarih - İlk Türk Devletleri', duration: '1 saat', edited: false, startHour: 16.25 },
-          { name: 'TYT Din Kültürü - Bilgi ve İnanç', duration: '1 saat', edited: false, startHour: 17.5 },
-          { name: 'Günün Tekrarı', duration: '1 saat', edited: false, startHour: 18.75 },
-        ],
-        notes: 'Yazım kuralları önemli.',
-        completed: false,
-      },
-      {
-        day: 'Cuma',
-        date: '2025-12-26',
-        topics: [
-          { name: 'TYT Türkçe - Noktalama İşaretleri', duration: '1 saat', edited: false, startHour: 8 },
-          { name: 'TYT Matematik - Mutlak Değer', duration: '1 saat', edited: false, startHour: 9.25 },
-          { name: 'TYT Matematik - Üslü Sayılar', duration: '1 saat', edited: false, startHour: 10.5 },
-          { name: 'TYT Kimya - Kimyasal Türler Arası Etkileşimler', duration: '1 saat', edited: false, startHour: 11.75 },
-          { name: 'Öğle Molası', duration: '1 saat', edited: false, startHour: 12.75 },
-          { name: 'AYT Matematik - Logaritma', duration: '1 saat', edited: false, startHour: 13.75 },
-          { name: 'AYT Matematik - Logaritma Soru Çözümü', duration: '1 saat', edited: false, startHour: 15 },
-          { name: 'TYT Biyoloji - Canlıların Sınıflandırılması', duration: '1 saat', edited: false, startHour: 16.25 },
-          { name: 'TYT Coğrafya - Dünyanın Şekli ve Hareketleri', duration: '1 saat', edited: false, startHour: 17.5 },
-          { name: 'Günün Tekrarı', duration: '1 saat', edited: false, startHour: 18.75 },
-        ],
-        notes: 'Haftayı güzel bitir.',
-        completed: false,
-      },
-      {
-        day: 'Cumartesi',
-        date: '2025-12-27',
-        topics: [
-          { name: 'TYT Genel Deneme', duration: '2.5 saat', edited: false, startHour: 9 },
-          { name: 'Deneme Analizi', duration: '1.5 saat', edited: false, startHour: 12 },
-          { name: 'Öğle Molası', duration: '1 saat', edited: false, startHour: 13.5 },
-          { name: 'Eksik Konu Çalışması - 1', duration: '1.5 saat', edited: false, startHour: 14.5 },
-          { name: 'Eksik Konu Çalışması - 2', duration: '1.5 saat', edited: false, startHour: 16.25 },
-          { name: 'Haftalık Genel Tekrar', duration: '2 saat', edited: false, startHour: 18 },
-        ],
-        notes: 'Deneme analizi çok kritik!',
-        completed: false,
-      },
-      {
-        day: 'Pazar',
-        date: '2025-12-28',
-        topics: [
-          { name: 'Serbest Zaman / Dinlenme', duration: '4 saat', edited: false, startHour: 10 },
-          { name: 'Haftalık Planlama', duration: '1 saat', edited: false, startHour: 18 },
-        ],
-        notes: 'Yeni haftaya hazırlan.',
-        completed: false,
-      },
-    ];
+    async function loadSchedule() {
+      const { supabase } = await import('@/lib/supabase');
 
-    const enriched = mockSchedule.map((d) => ({
-      ...d,
-      completed: d.completed ?? false,
-      topics: d.topics.map(t => ({ ...t, completed: false }))
-    }));
-    setSchedule(enriched);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const todayIdx = enriched.findIndex((d) => d.date === todayStr);
-    setSelectedIndex(todayIdx >= 0 ? todayIdx : 0);
+      const { data: scheduleData } = await supabase
+        .from('schedules')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: true });
 
-    if (todayIdx >= 0) {
-      setExpandedDays(new Set([enriched[todayIdx].day]));
-    } else if (enriched.length > 0) {
-      setExpandedDays(new Set([enriched[0].day]));
+      if (scheduleData && scheduleData.length > 0) {
+        const dayMap = new Map<string, any>();
+        scheduleData.forEach((item: any) => {
+          const dayName = item.title.split(' - ')[0];
+          if (!dayMap.has(dayName)) {
+            dayMap.set(dayName, {
+              day: dayName,
+              date: item.date.split('T')[0],
+              topics: [],
+              notes: '',
+              completed: false
+            });
+          }
+          const sessions = item.description.split(', ');
+          sessions.forEach((session: string, idx: number) => {
+            dayMap.get(dayName).topics.push({
+              name: session,
+              duration: '1 saat',
+              edited: false,
+              completed: false,
+              startHour: 8 + idx * 1.5
+            });
+          });
+        });
+
+        const enriched = Array.from(dayMap.values());
+        setSchedule(enriched);
+
+        const todayIdx = enriched.findIndex((d) => d.date === todayStr);
+        setSelectedIndex(todayIdx >= 0 ? todayIdx : 0);
+
+        if (todayIdx >= 0) {
+          setExpandedDays(new Set([enriched[todayIdx].day]));
+        } else if (enriched.length > 0) {
+          setExpandedDays(new Set([enriched[0].day]));
+        }
+      } else {
+        const mockSchedule: DaySchedule[] = [
+          {
+            day: 'Pazartesi',
+            date: '2025-12-22',
+            topics: [
+              { name: 'TYT Türkçe - Paragraf', duration: '1 saat', edited: false, startHour: 8 },
+              { name: 'TYT Matematik - Sayılar', duration: '1 saat', edited: false, startHour: 9.25 },
+            ],
+            notes: 'Haftaya enerjik başla!',
+            completed: false,
+          },
+        ];
+
+        const enriched = mockSchedule.map((d) => ({
+          ...d,
+          completed: d.completed ?? false,
+          topics: d.topics.map(t => ({ ...t, completed: false }))
+        }));
+        setSchedule(enriched);
+        setSelectedIndex(0);
+        setExpandedDays(new Set([enriched[0].day]));
+      }
     }
+
+    loadSchedule();
   }, []);
 
   const toggleDayExpansion = (day: string) => {
