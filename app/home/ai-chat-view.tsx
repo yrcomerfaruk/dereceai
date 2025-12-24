@@ -125,23 +125,64 @@ export default function AIChatView() {
 
       let aiContent = data.response;
 
-      // Parse Weekly Program JSON if present
-      const jsonMatch = aiContent.match(/```json\n([\s\S]*?)\n```/);
-      if (jsonMatch) {
-        try {
-          const jsonStr = jsonMatch[1];
-          const parsed = JSON.parse(jsonStr);
-          if (parsed.weeklyProgram) {
-            setProgramData(parsed.weeklyProgram);
-            // Remove the JSON block from display to keep it clean, or keep it?
-            // Let's keep it but maybe we remove it if we render a custom component.
-            // For now, let's strip it to avoid clutter.
-            aiContent = aiContent.replace(/```json\s*[\s\S]*?\s*```/, '').trim();
-            aiContent += "\n\n**Haftalık programın hazır!** Aşağıdaki butona tıklayarak takvimine ekleyebilirsin.";
+      // Check if weekly program was generated (backend sends it separately)
+      if (data.weeklyProgram) {
+        console.log('Weekly program received:', data.weeklyProgram);
+
+        // Automatically save the program to database
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          try {
+            console.log('Starting to save program for user:', user.id);
+
+            // Save each day's sessions to database with detailed information
+            for (const day of data.weeklyProgram) {
+              console.log('Processing day:', day.day, 'Date:', day.date);
+
+              // Convert sessions array to JSON string with all details
+              const sessionsData = Array.isArray(day.sessions)
+                ? day.sessions.map((session: any) => {
+                  if (typeof session === 'string') {
+                    return { subject: session };
+                  }
+                  return session;
+                })
+                : day.sessions;
+
+              console.log('Sessions data:', sessionsData);
+
+              const { data: insertData, error: insertError } = await supabase.from('schedules').insert({
+                user_id: user.id,
+                title: `${day.day} - Çalışma`,
+                description: JSON.stringify(sessionsData), // Store as JSON string
+                date: day.date || new Date().toISOString(), // Use real date from AI
+                type: 'study'
+              });
+
+              if (insertError) {
+                console.error('Insert error for day', day.day, ':', insertError);
+                throw insertError;
+              }
+
+              console.log('Successfully saved day:', day.day);
+            }
+
+            console.log('All days saved successfully!');
+            aiContent += "\n\n✅ **Haftalık programın otomatik olarak takvime eklendi!** [Takvimi görüntüle](/schedule)";
+          } catch (saveError) {
+            console.error("Auto-save error:", saveError);
+            // If auto-save fails, show manual save button
+            setProgramData(data.weeklyProgram);
+            aiContent += "\n\n⚠️ **Program oluşturuldu ama kaydedilemedi.** Aşağıdaki butona tıklayarak tekrar deneyebilirsin.";
           }
-        } catch (e) {
-          console.error("JSON Parse error", e);
+        } else {
+          console.log('User not logged in');
+          // User not logged in, show manual save button
+          setProgramData(data.weeklyProgram);
+          aiContent += "\n\n**Haftalık programın hazır!** Aşağıdaki butona tıklayarak takvimine ekleyebilirsin.";
         }
+      } else {
+        console.log('No weekly program in response');
       }
 
       const aiMessage: Message = {
@@ -175,13 +216,22 @@ export default function AIChatView() {
         return;
       }
 
-      // Save each day's sessions to database
+      // Save each day's sessions to database with detailed information
       for (const day of programData) {
+        const sessionsData = Array.isArray(day.sessions)
+          ? day.sessions.map((session: any) => {
+            if (typeof session === 'string') {
+              return { subject: session };
+            }
+            return session;
+          })
+          : day.sessions;
+
         await supabase.from('schedules').insert({
           user_id: user.id,
           title: `${day.day} - Çalışma`,
-          description: day.sessions.join(', '),
-          date: new Date().toISOString(),
+          description: JSON.stringify(sessionsData),
+          date: day.date || new Date().toISOString(),
           type: 'study'
         });
       }

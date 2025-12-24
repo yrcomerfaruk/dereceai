@@ -228,12 +228,6 @@ function ClientLayoutInner() {
             >
               Çıkış Yap
             </button>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="md:hidden w-full text-center mb-1 text-[11px] font-black tracking-wide text-black hover:opacity-70 transition-opacity"
-            >
-              Menüyü Kapat
-            </button>
             <p className="text-[10px] font-black text-black uppercase tracking-widest">Version 1.0</p>
           </div>
         </nav>

@@ -6,7 +6,16 @@ import { useHeaderActions } from '../header-context';
 interface DaySchedule {
   day: string;
   date: string;
-  topics: { name: string; duration: string; edited: boolean; completed?: boolean; startHour?: number }[];
+  topics: {
+    name: string;
+    topic?: string;
+    teacher?: string;
+    book?: string;
+    duration: string;
+    edited: boolean;
+    completed?: boolean;
+    startHour?: number
+  }[];
   notes: string;
   completed?: boolean;
 }
@@ -38,11 +47,32 @@ export default function SchedulePage() {
         .from('schedules')
         .select('*')
         .eq('user_id', user.id)
-        .order('date', { ascending: true });
+        .order('created_at', { ascending: false }); // Get newest first
 
       if (scheduleData && scheduleData.length > 0) {
+        // Find the latest study program (by created_at)
+        const studyPrograms = scheduleData.filter((item: any) => item.type === 'study');
+
+        let latestProgramData: any[] = [];
+        if (studyPrograms.length > 0) {
+          // Get the created_at timestamp of the most recent study program
+          const latestTimestamp = studyPrograms[0].created_at;
+
+          // Filter all programs that were created at the same time (same batch)
+          // We use a small time window (1 minute) to group programs created together
+          const latestDate = new Date(latestTimestamp);
+          const oneMinuteBefore = new Date(latestDate.getTime() - 60000);
+
+          latestProgramData = studyPrograms.filter((item: any) => {
+            const itemDate = new Date(item.created_at);
+            return itemDate >= oneMinuteBefore && itemDate <= latestDate;
+          });
+        }
+
         const dayMap = new Map<string, any>();
-        scheduleData.forEach((item: any) => {
+        const weekDayOrder = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+
+        latestProgramData.forEach((item: any) => {
           const dayName = item.title.split(' - ')[0];
           if (!dayMap.has(dayName)) {
             dayMap.set(dayName, {
@@ -53,19 +83,44 @@ export default function SchedulePage() {
               completed: false
             });
           }
-          const sessions = item.description.split(', ');
-          sessions.forEach((session: string, idx: number) => {
+
+          // Parse description - could be JSON or comma-separated string
+          let sessions: any[] = [];
+          try {
+            sessions = JSON.parse(item.description);
+          } catch {
+            // Fallback to old format
+            sessions = item.description.split(', ').map((s: string) => ({ subject: s }));
+          }
+
+          sessions.forEach((session: any, idx: number) => {
+            // Parse startTime if available, otherwise calculate from index
+            let startHour = 9; // Default start
+            if (session.startTime) {
+              const [hours, minutes] = session.startTime.split(':').map(Number);
+              startHour = hours + (minutes / 60);
+            } else {
+              startHour = 8 + idx * 1.5; // Fallback calculation
+            }
+
             dayMap.get(dayName).topics.push({
-              name: session,
-              duration: '1 saat',
+              name: session.subject || session.topic || 'Ders',
+              topic: session.topic || '',
+              teacher: session.teacher || '',
+              book: session.book || '',
+              duration: session.duration || '1 saat',
               edited: false,
               completed: false,
-              startHour: 8 + idx * 1.5
+              startHour: startHour
             });
           });
         });
 
-        const enriched = Array.from(dayMap.values());
+        // Sort by week day order
+        const enriched = weekDayOrder
+          .map(day => dayMap.get(day))
+          .filter(Boolean); // Remove undefined days
+
         setSchedule(enriched);
 
         const todayIdx = enriched.findIndex((d) => d.date === todayStr);
@@ -285,20 +340,45 @@ export default function SchedulePage() {
                       <div
                         key={tIdx}
                         onClick={() => toggleTopic(idx, tIdx)}
-                        className={`p-2 rounded cursor-pointer transition-all border ${topic.completed
+                        className={`p-3 rounded-lg cursor-pointer transition-all border ${topic.completed
                           ? 'bg-gray-50 text-gray-400 border-transparent'
-                          : 'bg-gray-50 text-gray-900 border-transparent hover:bg-gray-100'
+                          : 'bg-white text-gray-900 border-gray-200 hover:border-gray-300 hover:shadow-sm'
                           }`}
                       >
-                        <div className="flex justify-between items-start gap-2">
-                          <p className={`font-semibold text-xs flex-1 leading-tight ${topic.completed ? 'line-through opacity-50' : ''}`}>
+                        <div className="flex justify-between items-start gap-2 mb-2">
+                          <p className={`font-bold text-sm flex-1 leading-tight ${topic.completed ? 'line-through opacity-50' : ''}`}>
                             {topic.name}
                           </p>
                           <span className="text-xs font-medium text-gray-500 shrink-0">
                             {formatTimeRange(topic.startHour || 9, topic.duration)}
                           </span>
                         </div>
-                        <p className="text-[10px] font-medium text-gray-400 mt-1">{topic.duration}</p>
+
+                        {/* Teacher and Book Info - Side by Side */}
+                        {(topic.teacher || topic.book) && (
+                          <div className="flex items-center gap-3 mt-2 pt-2 border-t border-gray-100 flex-wrap">
+                            {topic.teacher && topic.teacher !== 'Belirtilmemiş' && (
+                              <div className="flex items-center gap-1.5">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-gray-400 shrink-0">
+                                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                  <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <span className="text-[10px] font-medium text-gray-600">{topic.teacher}</span>
+                              </div>
+                            )}
+                            {topic.book && topic.book !== 'Belirtilmemiş' && (
+                              <div className="flex items-center gap-1.5">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-gray-400 shrink-0">
+                                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <span className="text-[10px] font-medium text-gray-600">{topic.book}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <p className="text-[10px] font-medium text-gray-400 mt-2">{topic.duration}</p>
                       </div>
                     ))}
 
