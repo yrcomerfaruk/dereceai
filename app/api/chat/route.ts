@@ -115,117 +115,29 @@ export async function POST(req: NextRequest) {
 ${personalizedContext}
 ${studySchedule}
 
-**ÖNEMLİ:** Eğer öğrenci "Haftalık Program" veya "Program Oluştur" derse, öğrencinin eksiklerine ve kaynaklarına göre KİŞİSELLEŞTİRİLMİŞ bir program oluştur.
+**ÖNEMLİ:** Eğer öğrenci "Haftalık Program" veya "Program Oluştur" derse, ona şunu söyle:
 
-Program oluştururken:
-1. Öğrencinin ZAYIF olduğu konulara öncelik ver
-2. Öğrencinin kullandığı HOCA ve KİTAPLARI programda belirt (eğer yoksa "Belirtilmemiş" yaz)
-3. Net hedeflerine ulaşması için gereken konuları ekle
-4. Her gün için GERÇEK TARİH kullan (aşağıda verilen tarihler)
-5. Öğrencinin belirlediği ÇALIŞMA SAATLERİNE uy (${userProfile.studyDetails?.startTime || '09:00'} - ${userProfile.studyDetails?.endTime || '22:00'})
-6. Her etüt ${userProfile.sessionDetails?.sessionLength || 50} dakika olmalı
-7. Dersler arası ${userProfile.sessionDetails?.breakLength || 10} dakika mola ver
-8. Öğle arası ${userProfile.sessionDetails?.lunchBreak || 60} dakika mola ver (13:00-14:00 arası)
-9. **KRİTİK: SAATLER ÇAKIŞMAMALI!** Her ders bir önceki dersin bitişinden sonra başlamalı
+"Haftalık çalışma programı oluşturmak için **Program** sayfasına git ve **'Yeni Program Oluştur'** butonuna tıklaman yeterli! 📅 
 
-Tarihler:
-${weekDays.map((day, i) => `${day}: ${weekDates[i]}`).join('\n')}
+Sistem senin etüt süreni, mola sürelerini ve çalışma saatlerini kullanarak otomatik olarak kişiselleştirilmiş bir program oluşturacak. Haftada bir kez yeni program oluşturabilirsin."
 
-Kısa bir açıklama yap ve aşağıdaki JSON formatında bir program oluştur.
+Program oluşturma konusunda ASLA JSON formatında program döndürme. Sadece yukarıdaki mesajı ilet.
 
-**SAAT HESAPLAMA ÖRNEĞİ:**
-- İlk ders: ${userProfile.studyDetails?.startTime || '09:00'} başlar, ${userProfile.sessionDetails?.sessionLength || 50} dk sürer
-- Mola: ${userProfile.sessionDetails?.breakLength || 10} dk
-- İkinci ders: İlk dersin bitişi + mola sonrası başlar
-- Öğle molası: 13:00-14:00 arası ${userProfile.sessionDetails?.lunchBreak || 60} dk
-- Son ders: ${userProfile.studyDetails?.endTime || '22:00'}'dan önce bitmeli
-
-\`\`\`json
-{
-  "weeklyProgram": [
-    {
-      "day": "Pazartesi",
-      "date": "${weekDates[0]}",
-      "sessions": [
-        {
-          "subject": "Matematik (AYT)",
-          "topic": "Türev",
-          "teacher": "${userProfile.subjectResources?.['ayt-matematik']?.teachers?.[0] || 'Belirtilmemiş'}",
-          "book": "${userProfile.subjectResources?.['ayt-matematik']?.books?.[0] || 'Belirtilmemiş'}",
-          "duration": "${userProfile.sessionDetails?.sessionLength || 50} dakika",
-          "startTime": "${userProfile.studyDetails?.startTime || '09:00'}"
-        },
-        {
-          "subject": "Fizik (AYT)",
-          "topic": "Elektrik",
-          "teacher": "Belirtilmemiş",
-          "book": "Belirtilmemiş",
-          "duration": "${userProfile.sessionDetails?.sessionLength || 50} dakika",
-          "startTime": "10:00"
-        },
-        {
-          "subject": "Kimya (AYT)",
-          "topic": "Asit-Baz",
-          "teacher": "Belirtilmemiş",
-          "book": "Belirtilmemiş",
-          "duration": "${userProfile.sessionDetails?.sessionLength || 50} dakika",
-          "startTime": "11:00"
-        }
-      ]
-    },
-    {
-      "day": "Salı",
-      "date": "${weekDates[1]}",
-      "sessions": [
-        {
-          "subject": "Türkçe (TYT)",
-          "topic": "Paragraf",
-          "teacher": "Belirtilmemiş",
-          "book": "Belirtilmemiş",
-          "duration": "${userProfile.sessionDetails?.sessionLength || 50} dakika",
-          "startTime": "${userProfile.studyDetails?.startTime || '09:00'}"
-        }
-      ]
-    }
-  ]
-}
-\`\`\`
-
-**KRİTİK KURALLAR:**
-1. MUTLAKA 7 GÜN OLUŞTUR (Pazartesi'den Pazar'a kadar)
-2. Her gün için yukarıdaki tarihleri AYNEN kullan
-3. JSON formatına KESINLIKLE uy - her session'da subject, topic, teacher, book, duration, startTime olmalı
-4. **startTime MUTLAKA belirt** - Her ders için başlangıç saati olmalı
-5. **Saatler çakışmamalı** - İkinci ders ilk dersten ${userProfile.sessionDetails?.sessionLength || 50} dk + ${userProfile.sessionDetails?.breakLength || 10} dk sonra başlamalı
-6. Pazar günü hafif tutulabilir veya dinlenme günü olabilir
-7. Öğrencinin kullandığı hoca ve kitapları kullan, yoksa "Belirtilmemiş" yaz
-8. Duration her zaman "${userProfile.sessionDetails?.sessionLength || 50} dakika" formatında olmalı
+Diğer konularda öğrenciye yardımcı ol:
+- Çalışma stratejileri
+- Motivasyon
+- Konu anlatımı
+- Soru çözme teknikleri
+- Zaman yönetimi
 
 Soru: ${message}`;
 
-        // 5. Call Gemini
+        // 6. Call Gemini
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
         const result = await model.generateContent(systemPrompt);
         let response = result.response.text();
 
-        // Parse and extract JSON if present
-        let weeklyProgram = null;
-        const jsonMatch = response.match(/```json\s*\n([\s\S]*?)\n```/);
-        if (jsonMatch) {
-            try {
-                const jsonStr = jsonMatch[1];
-                const parsed = JSON.parse(jsonStr);
-                if (parsed.weeklyProgram) {
-                    weeklyProgram = parsed.weeklyProgram;
-                    // Remove JSON block from response
-                    response = response.replace(/```json\s*\n[\s\S]*?\n```/, '').trim();
-                }
-            } catch (e) {
-                console.error("JSON Parse error in backend:", e);
-            }
-        }
-
-        // Save to database (save the cleaned response without JSON)
+        // 7. Save to database (no JSON parsing needed anymore)
         console.log('Attempting to save to database...');
         if (authHeader) {
             const { data: { user } } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
@@ -242,7 +154,7 @@ Soru: ${message}`;
             console.log('No auth header, skipping save');
         }
 
-        return NextResponse.json({ response, weeklyProgram });
+        return NextResponse.json({ response });
 
     } catch (e: any) {
         console.error("Chat API Error:", e);

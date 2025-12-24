@@ -28,10 +28,56 @@ export default function SchedulePage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [notification, setNotification] = useState<{ message: string; type: 'error' | 'info' } | null>(null);
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const showToast = (message: string, type: 'error' | 'info' = 'error') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
+  };
+
+  const generateNewSchedule = async () => {
+    setIsGenerating(true);
+    try {
+      const { supabase } = await import('@/lib/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        showToast('Oturum bulunamadı');
+        return;
+      }
+
+      const response = await fetch('/api/generate-simple-schedule', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Show error message for longer duration if it's a rate limit error
+        const duration = response.status === 429 ? 5000 : 3000;
+        showToast(data.error || 'Program oluşturulamadı');
+        setTimeout(() => setNotification(null), duration);
+        return;
+      }
+
+      if (data.success && data.weeklyProgram) {
+        showToast('Program başarıyla oluşturuldu!', 'info');
+
+        // Reload the schedule
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Generate schedule error:', error);
+      showToast('Bir hata oluştu');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -260,25 +306,66 @@ export default function SchedulePage() {
   };
 
   useHeaderActions(
-    <div className="md:hidden flex items-center bg-gray-100 rounded-full p-0.5 space-x-0.5">
+    <div className="md:hidden flex items-center gap-2">
       <button
-        onClick={() => setView('takvim')}
-        className={`whitespace-nowrap px-2.5 py-1 rounded-full font-medium text-[12px] transition-all ${view === 'takvim' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+        onClick={generateNewSchedule}
+        disabled={isGenerating}
+        className="p-1.5 bg-black text-white rounded-full hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        title="Yeni Program Oluştur"
       >
-        Takvim
+        {isGenerating ? (
+          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
       </button>
-      <button
-        onClick={() => setView('liste')}
-        className={`whitespace-nowrap px-2.5 py-1 rounded-full font-medium text-[12px] transition-all ${view === 'liste' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-      >
-        Liste
-      </button>
+      <div className="bg-gray-100 rounded-full p-0.5 flex items-center space-x-0.5">
+        <button
+          onClick={() => setView('takvim')}
+          className={`whitespace-nowrap px-2.5 py-1 rounded-full font-medium text-[12px] transition-all ${view === 'takvim' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+        >
+          Takvim
+        </button>
+        <button
+          onClick={() => setView('liste')}
+          className={`whitespace-nowrap px-2.5 py-1 rounded-full font-medium text-[12px] transition-all ${view === 'liste' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+        >
+          Liste
+        </button>
+      </div>
     </div>
   );
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="hidden md:flex mb-3 justify-end items-center">
+      <div className="hidden md:flex mb-3 justify-between items-center">
+        <button
+          onClick={generateNewSchedule}
+          disabled={isGenerating}
+          className="px-4 py-1.5 bg-black text-white rounded-full font-medium text-sm hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          {isGenerating ? (
+            <>
+              <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Oluşturuluyor...
+            </>
+          ) : (
+            <>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Yeni Program Oluştur
+            </>
+          )}
+        </button>
         <div className="bg-gray-100 rounded-full p-0.5 flex items-center space-x-0.5">
           <button
             onClick={() => setView('takvim')}

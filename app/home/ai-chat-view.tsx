@@ -31,52 +31,128 @@ export default function AIChatView() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
   const [programData, setProgramData] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
+
+  const MESSAGES_PER_PAGE = 5;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Load messages from Supabase on mount
+  // Load initial messages (last 5)
   useEffect(() => {
-    async function loadMessages() {
-      setIsLoadingMessages(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsLoadingMessages(false);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('chat_messages')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true })
-        .limit(50);
-
-      if (data && !error) {
-        const loadedMessages: Message[] = [];
-        data.forEach((msg: any) => {
-          loadedMessages.push({
-            id: `${msg.id}-user`,
-            role: 'user',
-            content: msg.message
-          });
-          loadedMessages.push({
-            id: `${msg.id}-ai`,
-            role: 'assistant',
-            content: msg.response
-          });
-        });
-        setMessages(loadedMessages);
-      }
-      setIsLoadingMessages(false);
-    }
-    loadMessages();
+    loadInitialMessages();
   }, []);
+
+  const loadInitialMessages = async () => {
+    setIsLoadingMessages(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setIsLoadingMessages(false);
+      return;
+    }
+
+    const { data, error, count } = await supabase
+      .from('chat_messages')
+      .select('*', { count: 'exact' })
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .range(0, MESSAGES_PER_PAGE - 1);
+
+    if (data && !error) {
+      const loadedMessages: Message[] = [];
+      // Reverse to show oldest first
+      data.reverse().forEach((msg: any) => {
+        loadedMessages.push({
+          id: `${msg.id}-user`,
+          role: 'user',
+          content: msg.message
+        });
+        loadedMessages.push({
+          id: `${msg.id}-ai`,
+          role: 'assistant',
+          content: msg.response
+        });
+      });
+      setMessages(loadedMessages);
+      setOffset(MESSAGES_PER_PAGE);
+      setHasMore((count || 0) > MESSAGES_PER_PAGE);
+    }
+    setIsLoadingMessages(false);
+  };
+
+  const loadMoreMessages = async () => {
+    if (isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setIsLoadingMore(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + MESSAGES_PER_PAGE - 1);
+
+    if (data && !error) {
+      const loadedMessages: Message[] = [];
+      data.reverse().forEach((msg: any) => {
+        loadedMessages.push({
+          id: `${msg.id}-user`,
+          role: 'user',
+          content: msg.message
+        });
+        loadedMessages.push({
+          id: `${msg.id}-ai`,
+          role: 'assistant',
+          content: msg.response
+        });
+      });
+      setMessages(prev => [...loadedMessages, ...prev]);
+      setOffset(prev => prev + MESSAGES_PER_PAGE);
+      setHasMore(data.length === MESSAGES_PER_PAGE);
+    }
+    setIsLoadingMore(false);
+  };
+
+  // Scroll listener for loading more messages
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      // Load more when scrolled to top (within 50px threshold)
+      if (container.scrollTop < 50 && hasMore && !isLoadingMore) {
+        const prevScrollHeight = container.scrollHeight;
+        const prevScrollTop = container.scrollTop;
+
+        loadMoreMessages().then(() => {
+          // Restore scroll position after new messages are loaded
+          setTimeout(() => {
+            if (container) {
+              const newScrollHeight = container.scrollHeight;
+              const scrollDiff = newScrollHeight - prevScrollHeight;
+              container.scrollTop = prevScrollTop + scrollDiff;
+            }
+          }, 0);
+        });
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [hasMore, isLoadingMore, offset]);
 
   // Remove localStorage save
   // useEffect(() => {
@@ -271,7 +347,7 @@ export default function AIChatView() {
   return (
     <div className="flex flex-col h-full relative">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto no-scrollbar p-4 pb-8">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto no-scrollbar p-4 pb-8">
         {isLoadingMessages ? (
           <div className="h-full flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
@@ -320,6 +396,12 @@ export default function AIChatView() {
           </div>
         ) : (
           <div className="space-y-6 max-w-5xl mx-auto">
+            {/* Load More Indicator */}
+            {isLoadingMore && (
+              <div className="flex justify-center py-2">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-black"></div>
+              </div>
+            )}
             {messages.map((msg) => (
               <div
                 key={msg.id}
